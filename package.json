@@ -24,11 +24,6 @@
       "require": "./dist/node/tokenize.js",
       "types": "./dist/tokenize.d.ts"
     },
-    "./common.js": {
-      "import": "./dist/common.js",
-      "require": "./dist/node/common.js",
-      "types": "./dist/common.d.ts"
-    },
     "./languages/*.js": {
       "import": "./dist/languages/*.js",
       "require": "./dist/node/languages/*.js",
