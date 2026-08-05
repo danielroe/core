@@ -8,13 +8,12 @@
  */
 
 /**
- * Languages supported
- * @typedef {('default'|'atom-dark')} ShjTerminalTheme
+ * A theme, mapping each token type to the ANSI escape printed before it
+ * @typedef {Partial<Record<import('./index.js').ShjToken, string>>} ShjTerminalTheme
  */
 
 import { tokenize } from './index.js';
-
-let theme = import('./themes/default.js');
+import defaultTheme from './themes/default.js';
 
 /**
  * Highlight a string passed as argument and return a string that can directly be printed
@@ -23,12 +22,13 @@ let theme = import('./themes/default.js');
  * @function highlightText
  * @param {string} src The code
  * @param {ShjLanguage} lang The language of the code
+ * @param {ShjTerminalTheme} [theme] The theme to use, e.g. imported from `themes/atom-dark.js`
  * @returns {Promise<string>} The highlighted string
  */
-export const highlightText = async (src, lang) => {
-	let res = '', themeMap = (await theme).default;
+export const highlightText = async (src, lang, theme = defaultTheme) => {
+	let res = '';
 
-	await tokenize(src, lang, (str, token) => res += token ? `${themeMap[token] ?? ''}${str}\x1b[0m` : str);
+	await tokenize(src, lang, (str, token) => res += token ? `${theme[token] ?? ''}${str}\x1b[0m` : str);
 
 	return res;
 };
@@ -40,13 +40,6 @@ export const highlightText = async (src, lang) => {
  * @function printHighlight
  * @param {string} src The code
  * @param {ShjLanguage} lang The language of the code
+ * @param {ShjTerminalTheme} [theme] The theme to use, e.g. imported from `themes/atom-dark.js`
  */
-export const printHighlight = async (src, lang) => console.log(await highlightText(src, lang));
-
-/**
- * Change the current used theme for highlighting
- *
- * @function setTheme
- * @param {ShjTerminalTheme} name The name of the theme
- */
-export const setTheme = async name => theme = import(`./themes/${name}.js`);
+export const printHighlight = async (src, lang, theme) => console.log(await highlightText(src, lang, theme));

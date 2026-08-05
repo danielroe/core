@@ -47,7 +47,7 @@ export const themesBrowser = [
 	'visual-studio-dark'
 ]
 
-/** @type {import('../src/terminal.js').ShjTerminalTheme[]} */
+/** Terminal themes available in `src/themes/`, by name */
 export const themesTerminal = [
 	'default',
 	'atom-dark'

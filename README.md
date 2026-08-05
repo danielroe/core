@@ -102,11 +102,13 @@ import ... from 'https://cdn.jsdelivr.net/gh/speed-highlight/core/dist/index.js'
 Use the [deno module](https://deno.land/x/speed_highlight_js)
 
 ```js
-import { setTheme, printHighlight } from 'https://deno.land/x/speed_highlight_js/dist/terminal.js';
+import { printHighlight } from 'https://deno.land/x/speed_highlight_js/dist/terminal.js';
+import theme from 'https://deno.land/x/speed_highlight_js/dist/themes/atom-dark.js';
 
-await setTheme('[theme-name]');
-printHighlight('console.log("hello")', 'js');
+printHighlight('console.log("hello")', 'js', theme);
 ```
+
+The theme argument is optional and defaults to the `default` theme.
 
 ---
 
@@ -119,11 +121,12 @@ npm i @speed-highlight/core
 ```
 
 ```js
-const { setTheme, printHighlight } = require('@speed-highlight/core/terminal');
+const { printHighlight } = require('@speed-highlight/core/terminal');
 
-setTheme('[theme-name]');
 printHighlight('console.log("hello")', 'js');
 ```
+
+Pass a theme imported from `@speed-highlight/core/themes/[theme-name].js` as third argument to use another theme than the default one.
 
 ## Migrating from prism
 

@@ -29,7 +29,12 @@
       "require": "./dist/node/languages/*.js",
       "types": "./dist/languages/*.d.ts"
     },
-    "./themes/*.css": "./dist/themes/*.css"
+    "./themes/*.css": "./dist/themes/*.css",
+    "./themes/*.js": {
+      "import": "./dist/themes/*.js",
+      "require": "./dist/node/themes/*.js",
+      "types": "./dist/themes/*.d.ts"
+    }
   },
   "directories": {
     "example": "examples"

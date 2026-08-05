@@ -1,7 +1,7 @@
-import { languages, themesTerminal } from './data.js'
-import { setTheme, printHighlight, highlightText } from '../src/terminal.js';
+import { parse } from "https://deno.land/std/flags/mod.ts";
 import { fromFileUrl } from 'https://deno.land/std/path/mod.ts';
-import { parse } from "https://deno.land/std/flags/mod.ts"
+import { highlightText, printHighlight } from '../src/terminal.js';
+import { languages, themesTerminal } from './data.js';
 
 let args = parse(Deno.args)
 
@@ -21,6 +21,8 @@ if (args.help)
 	Deno.exit(0)
 }
 
+let theme;
+
 if (args.theme)
 {
 	if (!themesTerminal.includes(args.theme))
@@ -29,7 +31,7 @@ if (args.theme)
 		console.log(`${themesTerminal.join(', ')}`)
 		Deno.exit(1)
 	}
-	await setTheme(args.theme)
+	theme = (await import(`../src/themes/${args.theme}.js`)).default
 }
 
 if (args.lang && !languages.includes(args.lang))
@@ -55,10 +57,10 @@ if (args.stdin)
 	language = args.lang ?? args._[0]?.split?.('.')?.[1] ?? 'js';
 }
 
-await printHighlight(code, language);
+await printHighlight(code, language, theme);
 
 console.time('highlight')
 for (let i = 0; i < 100; i++) {
-	await highlightText(code, language);
+	await highlightText(code, language, theme);
 }
 console.timeEnd('highlight')
