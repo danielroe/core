@@ -95,11 +95,11 @@ export function* tokenizer(src, lang, token) {
  *
  * @example
  * import json from '@speed-highlight/core/languages/json.js';
- * import { tokenize } from '@speed-highlight/core/tokenize';
+ * import { tokenizeSync } from '@speed-highlight/core/tokenize';
  *
- * tokenize(src, { sub: json }, (str, type) => process.stdout.write(str));
+ * tokenizeSync(src, { sub: json }, (str, type) => process.stdout.write(str));
  *
- * @function tokenize
+ * @function tokenizeSync
  * @param {string} src The code
  * @param {string|ShjLanguageDefinition|{ sub: ShjLanguageDefinition }} lang The language of the code
  * @param {function(string, ShjToken=):void} token The callback function
@@ -108,7 +108,7 @@ export function* tokenizer(src, lang, token) {
  * * the type of the token
  * @param {ShjTokenizeOptions} [opt={}] Customization options
  */
-export function tokenize(src, lang, token, opt = {}) {
+export function tokenizeSync(src, lang, token, opt = {}) {
 	let lng,
 		it = tokenizer(src, lang, token),
 		res = it.next();
@@ -118,4 +118,3 @@ export function tokenize(src, lang, token, opt = {}) {
 		res = it.next(Array.isArray(lng) ? { default: lng } : lng);
 	}
 }
-

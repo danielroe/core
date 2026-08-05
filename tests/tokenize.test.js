@@ -1,8 +1,7 @@
-import { test } from 'node:test';
 import { deepStrictEqual } from 'node:assert';
 import { readFileSync } from 'node:fs';
+import { test } from 'node:test';
 import { tokenize as tokenizeAsync } from '../src/index.js';
-import { tokenize } from '../src/tokenize.js';
 import * as css from '../src/languages/css.js';
 import * as html from '../src/languages/html.js';
 import * as js from '../src/languages/js.js';
@@ -11,13 +10,14 @@ import * as jsdoc from '../src/languages/jsdoc.js';
 import * as json from '../src/languages/json.js';
 import * as regex from '../src/languages/regex.js';
 import * as todo from '../src/languages/todo.js';
+import { tokenizeSync } from '../src/tokenize.js';
 
 let fixtures = new URL('../examples/languages/', import.meta.url),
 	languages = { css, html, js, js_template_literals, jsdoc, json, regex, todo },
 	read = file => readFileSync(new URL(file, fixtures), 'utf8'),
 	collect = (src, lang, opt) => {
 		let tokens = [];
-		tokenize(src, lang, (str, token) => tokens.push([token, str]), opt);
+		tokenizeSync(src, lang, (str, token) => tokens.push([token, str]), opt);
 		return tokens;
 	},
 	collectAsync = async (src, lang) => {
