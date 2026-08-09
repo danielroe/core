@@ -1,3 +1,7 @@
+/**
+ * @name JSON
+ * @support string, number, bool, ...
+ */
 export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	{
 		type: 'var',

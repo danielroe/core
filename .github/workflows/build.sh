@@ -52,4 +52,6 @@ npx -p typescript tsc --outDir dist/node
 
 echo '{"type": "commonjs"}' > dist/node/package.json
 
+node scripts/generate-tables.js
+
 exit 0

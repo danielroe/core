@@ -1,3 +1,7 @@
+/**
+ * @name HTML
+ */
+
 import xml, { properties, xmlElement } from './xml.js';
 
 export default /** @satisfies {import('../index.js').ShjGrammar} */ ([

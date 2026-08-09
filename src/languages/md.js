@@ -1,3 +1,7 @@
+/**
+ * @name Markdown
+ */
+
 import { detectLanguage } from '../detect.js';
 
 export default /** @satisfies {import('../index.js').ShjGrammar} */ ([

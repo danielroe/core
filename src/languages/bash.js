@@ -1,3 +1,7 @@
+/**
+ * @name Bash
+ */
+
 /** @type {import('../index.js').ShjRule} */
 let variable = {
 	type: 'var',

@@ -1,3 +1,6 @@
+/**
+ * @name TODO
+ */
 export default /** @satisfies {import('../index.js').ShjLanguageData} */ ({
 	type: 'cmnt',
 	sub: [

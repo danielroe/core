@@ -1,3 +1,7 @@
+/**
+ * @name JavaScript
+ * @support basic syntax, regex, jsdoc, json, template literals
+ */
 export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	{ // js objects
 		match: /(("|')((?!\2)[^\r\n\\]|\\[^])*\2|[a-zA-Z]\w*)(?=\s*:)/g

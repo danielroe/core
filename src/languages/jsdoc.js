@@ -1,3 +1,7 @@
+/**
+ * @name JSDoc
+ */
+
 import todo from './todo.js';
 
 export default /** @satisfies {import('../index.js').ShjLanguageData} */ ({

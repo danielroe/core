@@ -1,3 +1,8 @@
+/**
+ * @name TypeScript
+ * @support js syntax, ts keyword, types
+ */
+
 import js from './js.js';
 
 export default /** @satisfies {import('../index.js').ShjGrammar} */ ([

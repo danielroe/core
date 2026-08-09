@@ -1,3 +1,6 @@
+/**
+ * @name Diff
+ */
 export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	{
 		type: 'deleted',

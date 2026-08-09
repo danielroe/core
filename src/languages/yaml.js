@@ -1,3 +1,7 @@
+/**
+ * @name YAML
+ * @support comment, numbers, variable, string, bool
+ */
 export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	{
 		match: /#.*/g,

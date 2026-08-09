@@ -1,3 +1,7 @@
+/**
+ * @name LeanPub Markdown
+ */
+
 import { detectLanguage } from '../detect.js';
 import md from './md.js';
 

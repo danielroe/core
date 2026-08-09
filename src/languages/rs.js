@@ -1,3 +1,6 @@
+/**
+ * @name Rust
+ */
 export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	{
 		match: /\/\/.*\n?|\/\*((?!\*\/)[^])*(\*\/)?/g,

@@ -1,3 +1,7 @@
+/**
+ * @name Brainfuck
+ * @support increment, operator, print, comment
+ */
 export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	{
 		match: /[^,\[\->+.<\]\s].*/g,

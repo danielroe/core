@@ -1,3 +1,6 @@
+/**
+ * @name Java
+ */
 export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	{
 		match: /\/\/.*\n?|\/\*((?!\*\/)[^])*(\*\/)?/g,

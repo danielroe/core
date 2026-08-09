@@ -1,3 +1,6 @@
+/**
+ * @name URI
+ */
 export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	{
 		match: /^#.*/gm,

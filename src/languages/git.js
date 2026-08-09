@@ -1,3 +1,8 @@
+/**
+ * @name Git
+ * @support comment, insert, deleted, string, ...
+ */
+
 import diff from './diff.js';
 
 export default /** @satisfies {import('../index.js').ShjGrammar} */ ([

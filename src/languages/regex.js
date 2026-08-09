@@ -1,3 +1,7 @@
+/**
+ * @name Regex
+ * @support count, set, ...
+ */
 export default /** @satisfies {import('../index.js').ShjLanguageData} */ ({
 	type: 'oper',
 	sub: [

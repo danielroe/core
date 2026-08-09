@@ -1,3 +1,7 @@
+/**
+ * @name Dockerfile
+ */
+
 import bash from "./bash.js";
 
 export default /** @satisfies {import('../index.js').ShjGrammar} */ ([

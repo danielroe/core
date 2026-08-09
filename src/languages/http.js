@@ -1,3 +1,8 @@
+/**
+ * @name HTTP
+ * @support keywork, string, punctuation, variable, version
+ */
+
 import { detectLanguage } from '../detect.js';
 
 export default /** @satisfies {import('../index.js').ShjGrammar} */ ([

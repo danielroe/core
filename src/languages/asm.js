@@ -1,3 +1,6 @@
+/**
+ * @name Assembly
+ */
 export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	{
 		type: 'cmnt',

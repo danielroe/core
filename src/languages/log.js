@@ -1,3 +1,7 @@
+/**
+ * @name Log
+ * @support number, string, comment, errors
+ */
 export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	{
 		type: 'cmnt',

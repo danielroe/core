@@ -1,3 +1,7 @@
+/**
+ * @name CSS
+ * @support comment, str, selector, units, function, ...
+ */
 export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	{
 		match: /\/\*((?!\*\/)[^])*(\*\/)?/g,
