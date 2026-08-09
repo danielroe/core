@@ -2,14 +2,14 @@ import { deepStrictEqual } from 'node:assert';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { tokenize as tokenizeAsync } from '../src/index.js';
-import * as css from '../src/languages/css.js';
-import * as html from '../src/languages/html.js';
-import * as js from '../src/languages/js.js';
-import * as js_template_literals from '../src/languages/js_template_literals.js';
-import * as jsdoc from '../src/languages/jsdoc.js';
-import * as json from '../src/languages/json.js';
-import * as regex from '../src/languages/regex.js';
-import * as todo from '../src/languages/todo.js';
+import css from '../src/languages/css.js';
+import html from '../src/languages/html.js';
+import js from '../src/languages/js.js';
+import js_template_literals from '../src/languages/js_template_literals.js';
+import jsdoc from '../src/languages/jsdoc.js';
+import json from '../src/languages/json.js';
+import regex from '../src/languages/regex.js';
+import todo from '../src/languages/todo.js';
 import { tokenizeSync } from '../src/tokenize.js';
 
 let fixtures = new URL('../examples/languages/', import.meta.url),
@@ -29,13 +29,20 @@ let fixtures = new URL('../examples/languages/', import.meta.url),
 test('a definition given as a sub needs no registry', async () => {
 	let src = read('test.json');
 
-	deepStrictEqual(collect(src, { sub: json.default }), await collectAsync(src, 'json'));
+	deepStrictEqual(collect(src, { sub: json }), await collectAsync(src, 'json'));
+});
+
+test('a language can be given directly as its grammar', async () => {
+	let src = read('test.json');
+
+	deepStrictEqual(collect(src, json), await collectAsync(src, 'json'));
+	deepStrictEqual(collect(src, json), collect(src, { sub: json }));
 });
 
 test('a nested sub is resolved from the given languages', async () => {
 	let src = read('test.html');
 
-	deepStrictEqual(collect(src, { sub: html.default }, { languages }), await collectAsync(src, 'html'));
+	deepStrictEqual(collect(src, { sub: html }, { languages }), await collectAsync(src, 'html'));
 });
 
 test('a language can be given by name', async () => {
@@ -44,16 +51,16 @@ test('a language can be given by name', async () => {
 	deepStrictEqual(collect(src, 'js', { languages }), await collectAsync(src, 'js'));
 });
 
-test('a language can be given as a definition or as its module', async () => {
+test('a language can be given bare or wrapped in a sub', async () => {
 	let src = read('test.json');
 
 	deepStrictEqual(
-		collect(src, 'json', { languages: { json: json.default } }),
+		collect(src, 'json', { languages: { json: { sub: json } } }),
 		collect(src, 'json', { languages }));
 });
 
 test('the type of a language applies to the text it does not match', () => {
-	deepStrictEqual(collect('// TODO stuff', { sub: js.default }, { languages }), [
+	deepStrictEqual(collect('// TODO stuff', { sub: js }, { languages }), [
 		[undefined, ''],
 		['cmnt', '// '],
 		['err', 'TODO'],
@@ -63,7 +70,7 @@ test('the type of a language applies to the text it does not match', () => {
 });
 
 test('a sub that is not given is emitted as plain text', () => {
-	deepStrictEqual(collect('// TODO stuff', { sub: js.default }), [
+	deepStrictEqual(collect('// TODO stuff', { sub: js }), [
 		[undefined, ''],
 		[undefined, '// TODO stuff'],
 		[undefined, '']

@@ -1,6 +1,6 @@
-import { detectLanguage } from '../detect.js'
+import { detectLanguage } from '../detect.js';
 
-export default [
+export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	{
 		type: 'cmnt',
 		match: /^>.*|(=|-)\1+/gm
@@ -47,4 +47,4 @@ export default [
 			}
 		]
 	}
-]
+]);

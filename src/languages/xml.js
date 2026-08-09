@@ -4,6 +4,7 @@ let
 export let
 	name = `[${nameStartChar}][${nameChar}]*`,
 	properties = `(\\s+${name}\\s*(=\\s*([^"'>\\s][^>\\s]*|("|')(\\\\[^]|(?!\\4)[^])*\\4?)?)?)*\\s*`,
+	/** @type {{ match: RegExp, sub: import('../index.js').ShjGrammar }} */
 	xmlElement = {
 		match: RegExp(`<[\/!?]?${name}${properties}[\/!?]?>`, 'g'),
 		sub: [
@@ -38,7 +39,7 @@ export let
 		]
 	};
 
-export default [
+export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	{
 		match: /<!--[^]*?-->/g,
 		sub: 'todo'
@@ -73,4 +74,4 @@ export default [
 		type: 'var',
 		match: /&(#x?)?[\da-z]{1,8};/gi
 	}
-]
+]);

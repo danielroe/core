@@ -1,4 +1,4 @@
-export default [
+export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	{
 		type: 'cmnt',
 		match: /^#.*/gm
@@ -25,4 +25,4 @@ export default [
 		type: 'oper',
 		match: /\.|,/g
 	}
-]
+]);

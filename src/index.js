@@ -4,8 +4,27 @@
 */
 
 /**
- * Default languages supported
- * @typedef {('asm'|'bash'|'bf'|'c'|'css'|'csv'|'diff'|'docker'|'git'|'go'|'html'|'http'|'ini'|'java'|'js'|'jsdoc'|'json'|'leanpub-md'|'log'|'lua'|'make'|'md'|'pl'|'plain'|'py'|'regex'|'rs'|'sql'|'todo'|'toml'|'ts'|'uri'|'xml'|'yaml')} ShjLanguage
+ * Languages bundled by default
+ * @typedef {('asm'|'bash'|'bf'|'c'|'css'|'csv'|'diff'|'docker'|'git'|'go'|'html'|'http'|'ini'|'java'|'js'|'jsdoc'|'json'|'leanpub-md'|'log'|'lua'|'make'|'md'|'pl'|'plain'|'py'|'regex'|'rs'|'sql'|'todo'|'toml'|'ts'|'uri'|'xml'|'yaml')} ShjBuiltinLanguage
+ */
+
+/**
+ * A bundled language or any name the loader can give
+ * @typedef {ShjBuiltinLanguage | (string & {})} ShjLanguage
+ */
+
+/**
+ * @typedef {import('./tokenize.js').ShjToken} ShjToken
+ * @typedef {import('./tokenize.js').ShjMatcher} ShjMatcher
+ * @typedef {import('./tokenize.js').ShjLanguageData} ShjLanguageData
+ * @typedef {import('./tokenize.js').ShjRule} ShjRule
+ * @typedef {import('./tokenize.js').ShjGrammar} ShjGrammar
+ * @typedef {import('./tokenize.js').ShjTokenCallback} ShjTokenCallback
+ */
+
+/**
+ * Give a language for the asked name: the language, its module, or a promise of either
+ * @typedef {(name: string) => ShjLanguageData | { default: ShjLanguageData } | Promise<ShjLanguageData | { default: ShjLanguageData }> | undefined} ShjLanguageLoader
  */
 
 /**
@@ -15,7 +34,7 @@
 
 /**
  * @typedef {Object} ShjOptions
- * @property {Boolean} [hideLineNumbers=false] Indicates whether to hide line numbers
+ * @property {boolean} [hideLineNumbers=false] Indicates whether to hide line numbers
  */
 
 /**
@@ -25,14 +44,19 @@
  * * `multiline` inside `div` element
  */
 
-/**
- * Token types
- * @typedef {('deleted'|'err'|'var'|'section'|'kwd'|'class'|'cmnt'|'insert'|'type'|'func'|'bool'|'num'|'oper'|'str'|'esc')} ShjToken
- */
-
 import { tokenizer } from './tokenize.js';
 
-const langs = {},
+/**
+ * Loader of the bundled languages, can be called
+ * by a custom loader as its fallback
+ *
+ * @type {ShjLanguageLoader}
+ */
+export const defaultLoader = name => import(`./languages/${name}.js`);
+
+let loader = defaultLoader;
+
+const cache = /** @type {Object<string, ReturnType<ShjLanguageLoader>>} */ ({}),
 	sanitize = (str = '') =>
 		str.replaceAll('&', '&#38;').replaceAll?.('<', '&lt;').replaceAll?.('>', '&gt;'),
 	/**
@@ -42,36 +66,37 @@ const langs = {},
 	 * @ignore
 	 * @param {string} str The content (need to be sanitized)
 	 * @param {ShjToken} [token] The type of token
-	 * @returns A HMTL string
+	 * @returns A HTML string
 	 */
 	toSpan = (str, token) => token ? `<span class="shj-syn-${token}">${str}</span>` : str;
 
 /**
- * Find the tokens in the given code and call the given callback
+ * Find the tokens in the given code and call the given callback,
+ * bundled languages are loaded on first use
  *
  * @function tokenize
  * @param {string} src The code
- * @param {ShjLanguage|Array} lang The language of the code
- * @param {function(string, ShjToken=):void} token The callback function
- * this function will be given
- * * the text of the token
- * * the type of the token
+ * @param {ShjLanguage|ShjLanguageData} lang The language of the code
+ * @param {ShjTokenCallback} onToken Called with the text and type of each token
  */
-export async function tokenize(src, lang, token) {
+export async function tokenize(src, lang, onToken) {
 	let data,
-		it = tokenizer(src, lang, token),
+		it = tokenizer(src, lang, onToken),
 		res = it.next();
 
 	while (!res.done) {
+		let name = /** @type {string} */ (res.value);
 		try {
-			// bundlers can make this throw synchronously, so it cannot be a catch on the promise
-			data = await (langs[res.value] ??= import(`./languages/${res.value}.js`));
+			// the loader is only called on cache misses, import() can throw
+			// synchronously when bundled so it cannot be a catch on the promise
+			data = /** @type {{ default?: ShjLanguageData, sub?: ShjGrammar }|undefined} */ (await (cache[name] ??= loader(name)));
 		}
 		catch {
-			// an unknown language is left undefined, the tokenizer emits its source untouched
 			data = undefined;
 		}
-		res = it.next(data);
+		if (data === undefined)
+			console.warn(`[speed-highlight] unknown language "${name}"`);
+		res = it.next(/** @type {ShjLanguageData|undefined} */ (data?.default ?? data));
 	}
 }
 
@@ -83,7 +108,7 @@ export async function tokenize(src, lang, token) {
  * @async
  * @function highlightText
  * @param {string} src The code
- * @param {ShjLanguage} lang The language of the code
+ * @param {ShjLanguage|ShjLanguageData} lang The language of the code
  * @param {Boolean} [multiline=true] If it is multiline, it will add a wrapper for the line numbering and header
  * @param {ShjOptions} [opt={}] Customization options
  * @returns {Promise<string>} The highlighted string
@@ -107,10 +132,10 @@ export async function highlightText(src, lang, multiline = true, opt = {}) {
  * @param {ShjDisplayMode} [mode] The display mode (guessed by default)
  * @param {ShjOptions} [opt={}] Customization options
  */
-export async function highlightElement(elm, lang = elm.className.match(/shj-lang-([\w-]+)/)?.[1], mode, opt) {
+export async function highlightElement(elm, lang = /** @type {ShjLanguage} */ (elm.className.match(/shj-lang-([\w-]+)/)?.[1]), mode, opt) {
 	let txt = elm.textContent;
 	mode ??= `${elm.tagName == 'CODE' ? 'in' : (txt.split('\n').length < 2 ? 'one' : 'multi')}line`;
-	elm.dataset.lang = lang;
+	/** @type {HTMLElement} */ (elm).dataset.lang = lang;
 	elm.className = `${[...elm.classList].filter(className => !className.startsWith('shj-')).join(' ')} shj-lang-${lang} shj-${mode}`;
 	elm.innerHTML = await highlightText(txt, lang, mode == 'multiline', opt);
 }
@@ -128,23 +153,24 @@ export let highlightAll = async (opt) =>
 		.map(elm => highlightElement(elm, undefined, undefined, opt)))
 
 /**
- * @typedef {{ match: RegExp, type: string }
- *   | { match: RegExp, sub: string | ShjLanguageDefinition | (code:string) => ShjLanguageComponent }
- *   | { expand: string }
- * } ShjLanguageComponent
- */
-
-/**
- * @typedef {ShjLanguageComponent[]} ShjLanguageDefinition
- */
-
-/**
- * Load a language and add it to the langs object
+ * Replace how language names are loaded, call it before highlighting
  *
+ * @example
+ * setLoader(name => customs[name] ?? defaultLoader(name));
+ *
+ * @function setLoader
+ * @param {ShjLanguageLoader} newLoader Given a name, returns the language, its module, or a promise of either
+ */
+export let setLoader = newLoader => {
+	loader = newLoader;
+}
+
+/**
+ * @deprecated Use `setLoader` instead
  * @function loadLanguage
  * @param {string} languageName The name of the language
- * @param {{ default: ShjLanguageDefinition }} language The language
+ * @param {ShjLanguageData|{ default: ShjLanguageData }} language The language, or its module
  */
 export let loadLanguage = (languageName, language) => {
-	langs[languageName] = language;
+	cache[languageName] = language;
 }

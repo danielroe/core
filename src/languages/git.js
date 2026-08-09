@@ -1,6 +1,6 @@
-import diff from './diff.js'
+import diff from './diff.js';
 
-export default [
+export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	{
 		match: /^#.*/gm,
 		sub: 'todo'
@@ -17,4 +17,4 @@ export default [
 		type: 'kwd',
 		match: /^commit \w+$/gm
 	}
-]
+]);

@@ -1,6 +1,6 @@
-import xml, { properties, xmlElement } from './xml.js'
+import xml, { properties, xmlElement } from './xml.js';
 
-export default [
+export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	{
 		type: 'class',
 		match: /<!DOCTYPE("[^"]*"|'[^']*'|[^"'>])*>/gi,
@@ -48,4 +48,4 @@ export default [
 		]
 	},
 	...xml
-]
+]);

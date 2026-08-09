@@ -1,4 +1,4 @@
-export default [
+export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	{
 		type: 'deleted',
 		match: /^[-<].*/gm
@@ -15,4 +15,4 @@ export default [
 		type: 'section',
 		match: /^@@.*@@$|^\d.*|^([*-+])\1\1.*/gm
 	}
-]
+]);

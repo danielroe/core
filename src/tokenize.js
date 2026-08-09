@@ -4,38 +4,73 @@
 */
 
 /**
- * @typedef {import('./index.js').ShjToken} ShjToken
+ * Token types
+ * @typedef {('deleted'|'err'|'var'|'section'|'kwd'|'class'|'cmnt'|'insert'|'type'|'func'|'bool'|'num'|'oper'|'str'|'esc')} ShjToken
  */
 
 /**
- * @typedef {import('./index.js').ShjLanguageDefinition} ShjLanguageDefinition
+ * A stateful object behaving like a RegExp, as the tokenizer
+ * only relies on `lastIndex` and `exec` (a RegExp fits the shape)
+ * @typedef {{ lastIndex: number, exec: (str: string) => ({ index: number, 0: string }|null) }} ShjMatcher
  */
 
 /**
- * A language, either the module exporting it or the definition itself
- * @typedef {{ default: ShjLanguageDefinition, type?: ShjToken }|ShjLanguageDefinition} ShjLanguageModule
+ * A language: its grammar alone, or with the type
+ * given to the text the grammar does not match
+ * @typedef {ShjGrammar | { type?: ShjToken, sub: ShjGrammar }} ShjLanguageData
  */
 
 /**
- * @typedef {Object} ShjTokenizeOptions
- * @property {Object<string, ShjLanguageModule>} [languages={}] The languages a `sub` can refer to by name
+ * @typedef {{ expand: ('num'|'str'|'strDouble'), match?: undefined }
+ *   | {
+ *       match: ShjMatcher,
+ *       type?: ShjToken,
+ *       sub?: string | ShjGrammar | ((code: string) => string | ShjLanguageData),
+ *       expand?: undefined
+ *     }
+ * } ShjRule
  */
 
-import expandData from './common.js';
+/**
+ * The rules of a language
+ * @typedef {ShjRule[]} ShjGrammar
+ */
 
 /**
- * Find the tokens in the given code, yielding the name of every language
- * it needs and expecting its definition to be sent back
+ * Called with the text and type of every token found
+ * @typedef {(text: string, token?: ShjToken) => void} ShjTokenCallback
+ */
+
+
+/** @type {Record<string, { type: import('./tokenize.js').ShjToken, match: RegExp }>} */
+const expandData = {
+	num: {
+		type: 'num',
+		match: /(\.e?|\b)\d(e-|[\d.oxa-fA-F_])*(\.|\b)/g
+	},
+	str: {
+		type: 'str',
+		match: /(["'])(\\[^]|(?!\1)[^\r\n\\])*\1?/g
+	},
+	strDouble: {
+		type: 'str',
+		match: /"((?!")[^\r\n\\]|\\[^])*"?/g
+	}
+};
+
+/**
+ * Find the tokens in the given code, yielding the name of every
+ * language it needs and expecting it to be sent back
  *
  * @generator
  * @function tokenizer
  * @param {string} src The code
- * @param {string|ShjLanguageDefinition|{ sub: ShjLanguageDefinition }} lang The language of the code
- * @param {function(string, ShjToken=):void} token The callback function
+ * @param {string|ShjLanguageData} lang The language of the code, by name or given directly
+ * @param {ShjTokenCallback} onToken The callback function
  * @yields {string} The name of a language to resolve
- * @returns {Generator<string, void, { default: ShjLanguageDefinition, type?: ShjToken }|undefined>}
+ * @returns {Generator<string, void, ShjLanguageData|undefined>}
  */
-export function* tokenizer(src, lang, token) {
+export function* tokenizer(src, lang, onToken) {
 	try {
 		let m,
 			part,
@@ -43,9 +78,10 @@ export function* tokenizer(src, lang, token) {
 			match,
 			cache = [],
 			i = 0,
-			data = typeof lang === 'string' ? yield lang : lang,
-			// make a fast shallow copy to bee able to splice lang without change the original one
-			arr = [...typeof lang === 'string' ? data.default : lang.sub];
+			// an unknown language leaves data undefined, the throw makes the catch emit plain text
+			data = /** @type {any} */ (typeof lang === 'string' ? yield lang : lang),
+			// make a fast shallow copy to bee able to splice it without change the original one
+			arr = [.../** @type {ShjGrammar} */ (data.sub ?? data)];
 
 		while (i < src.length) {
 			first.index = null;
@@ -75,17 +111,17 @@ export function* tokenizer(src, lang, token) {
 			}
 			if (first.index === null)
 				break;
-			token(src.slice(i, first.index), data.type);
+			onToken(src.slice(i, first.index), data.type);
 			i = first.end;
 			if (first.part.sub)
-				yield* tokenizer(first.match, typeof first.part.sub === 'string' ? first.part.sub : (typeof first.part.sub === 'function' ? first.part.sub(first.match) : first.part), token);
+				yield* tokenizer(first.match, typeof first.part.sub === 'string' ? first.part.sub : (typeof first.part.sub === 'function' ? first.part.sub(first.match) : first.part), onToken);
 			else
-				token(first.match, first.part.type);
+				onToken(first.match, first.part.type);
 		}
-		token(src.slice(i, src.length), data.type);
+		onToken(src.slice(i, src.length), data.type);
 	}
 	catch {
-		token(src);
+		onToken(src);
 	}
 }
 
@@ -97,24 +133,18 @@ export function* tokenizer(src, lang, token) {
  * import json from '@speed-highlight/core/languages/json.js';
  * import { tokenizeSync } from '@speed-highlight/core/tokenize';
  *
- * tokenizeSync(src, { sub: json }, (str, type) => process.stdout.write(str));
+ * tokenizeSync(src, json, (str, type) => process.stdout.write(str));
  *
  * @function tokenizeSync
  * @param {string} src The code
- * @param {string|ShjLanguageDefinition|{ sub: ShjLanguageDefinition }} lang The language of the code
- * @param {function(string, ShjToken=):void} token The callback function
- * this function will be given
- * * the text of the token
- * * the type of the token
- * @param {ShjTokenizeOptions} [opt={}] Customization options
+ * @param {string|ShjLanguageData} lang The language of the code
+ * @param {ShjTokenCallback} onToken Called with the text and type of each token
+ * @param {{ languages?: Record<string, ShjLanguageData> }} [opt={}] Customization options
  */
-export function tokenizeSync(src, lang, token, opt = {}) {
-	let lng,
-		it = tokenizer(src, lang, token),
+export function tokenizeSync(src, lang, onToken, opt = {}) {
+	let it = tokenizer(src, lang, onToken),
 		res = it.next();
 
-	while (!res.done) {
-		lng = opt.languages?.[res.value];
-		res = it.next(Array.isArray(lng) ? { default: lng } : lng);
-	}
+	while (!res.done)
+		res = it.next(opt.languages?.[/** @type {string} */ (res.value)]);
 }

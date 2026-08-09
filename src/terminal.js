@@ -5,6 +5,7 @@
 
 /**
  * @typedef {import('./index.js').ShjLanguage} ShjLanguage
+ * @typedef {import('./index.js').ShjLanguageData} ShjLanguageData
  */
 
 /**
@@ -16,12 +17,13 @@ import { tokenize } from './index.js';
 import defaultTheme from './themes/default.js';
 
 /**
- * Highlight a string passed as argument and return a string that can directly be printed
+ * Highlight a string passed as argument and return a string that can directly be printed,
+ * bundled languages are loaded on first use
  *
  * @async
  * @function highlightText
  * @param {string} src The code
- * @param {ShjLanguage} lang The language of the code
+ * @param {ShjLanguage|ShjLanguageData} lang The language of the code
  * @param {ShjTerminalTheme} [theme] The theme to use, e.g. imported from `themes/atom-dark.js`
  * @returns {Promise<string>} The highlighted string
  */
@@ -32,14 +34,3 @@ export const highlightText = async (src, lang, theme = defaultTheme) => {
 
 	return res;
 };
-
-/**
- * Highlight and print a given string
- *
- * @async
- * @function printHighlight
- * @param {string} src The code
- * @param {ShjLanguage} lang The language of the code
- * @param {ShjTerminalTheme} [theme] The theme to use, e.g. imported from `themes/atom-dark.js`
- */
-export const printHighlight = async (src, lang, theme) => console.log(await highlightText(src, lang, theme));

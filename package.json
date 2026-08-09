@@ -5,35 +5,40 @@
   "main": "./dist/index.js",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/node/index.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/node/index.js"
     },
     "./detect": {
+      "types": "./dist/detect.d.ts",
       "import": "./dist/detect.js",
-      "require": "./dist/node/detect.js",
-      "types": "./dist/detect.d.ts"
+      "require": "./dist/node/detect.js"
     },
     "./terminal": {
+      "types": "./dist/terminal.d.ts",
       "import": "./dist/terminal.js",
-      "require": "./dist/node/terminal.js",
-      "types": "./dist/terminal.d.ts"
+      "require": "./dist/node/terminal.js"
     },
     "./tokenize": {
+      "types": "./dist/tokenize.d.ts",
       "import": "./dist/tokenize.js",
-      "require": "./dist/node/tokenize.js",
-      "types": "./dist/tokenize.d.ts"
+      "require": "./dist/node/tokenize.js"
+    },
+    "./languages": {
+      "types": "./dist/languages/index.d.ts",
+      "import": "./dist/languages/index.js",
+      "require": "./dist/node/languages/index.js"
     },
     "./languages/*.js": {
+      "types": "./dist/languages/*.d.ts",
       "import": "./dist/languages/*.js",
-      "require": "./dist/node/languages/*.js",
-      "types": "./dist/languages/*.d.ts"
+      "require": "./dist/node/languages/*.js"
     },
     "./themes/*.css": "./dist/themes/*.css",
     "./themes/*.js": {
+      "types": "./dist/themes/*.d.ts",
       "import": "./dist/themes/*.js",
-      "require": "./dist/node/themes/*.js",
-      "types": "./dist/themes/*.d.ts"
+      "require": "./dist/node/themes/*.js"
     }
   },
   "directories": {
@@ -45,7 +50,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/speed-highlight/core.git"
+    "url": "git+https://github.com/speed-highlight/core.git"
   },
   "bugs": {
     "url": "https://github.com/speed-highlight/core/issues"
@@ -96,7 +101,11 @@
     "provenance": true
   },
   "files": [
-    "dist"
+    "dist",
+    "src"
+  ],
+  "sideEffects": [
+    "**/*.css"
   ],
   "typesVersions": {
     "*": {

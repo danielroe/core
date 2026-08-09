@@ -1,4 +1,4 @@
-export default [
+export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	{
 		match: /\/\/.*\n?|\/\*((?!\*\/)[^])*(\*\/)?/g,
 		sub: 'todo'
@@ -30,4 +30,4 @@ export default [
 		type: 'func',
 		match: /[a-zA-Z_][\w_]*(?=\s*!?\s*\()/g
 	}
-]
+]);

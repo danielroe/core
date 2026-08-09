@@ -41,6 +41,27 @@ import { highlightAll } from '/path/dist/index.js';
 highlightAll();
 ```
 
+Every bundled language is loaded on first use. Control how names are loaded
+by setting your own loader (before highlighting), the default one is given
+to be composed with:
+
+```js
+import { setLoader, defaultLoader } from '@speed-highlight/core';
+
+// add custom languages on top of the bundled ones
+setLoader(name => customs[name] ?? defaultLoader(name));
+
+// or only allow the ones your bundler can code-split
+setLoader(name => ({
+	js: () => import('@speed-highlight/core/languages/js.js'),
+	css: () => import('@speed-highlight/core/languages/css.js'),
+})[name]?.());
+```
+
+> [!NOTE]
+> Bundling your app? The name-based functions above reach the whole language
+> registry. Use the synchronous API below to only pay for what you import.
+
 Auto language detection
 
 ```js
@@ -51,35 +72,18 @@ elm.textContent = code;
 highlightElement(elm, detectLanguage(code));
 ```
 
-Load custom language
-
-```js
-import { loadLanguage } from '../dist/index.js';
-
-loadLanguage('language-name', customLanguage);
-```
-
-Preload a bundled language
-
-```js
-import { loadLanguage } from '@speed-highlight/core';
-import * as js from '@speed-highlight/core/languages/js.js';
-
-loadLanguage('js', js);
-```
-
-Tokenize without the language registry, so a bundler only keeps the languages you import
+Tokenize synchronously, without any registry: every language is given by the
+caller, so a bundler only keeps the ones you import
 
 ```js
 import { tokenizeSync } from '@speed-highlight/core/tokenize';
-import html from '@speed-highlight/core/languages/html.js';
-import css from '@speed-highlight/core/languages/css.js';
-import js from '@speed-highlight/core/languages/js.js';
+import { html, css, js } from '@speed-highlight/core/languages';
 
-tokenizeSync(code, { sub: html }, (str, type) => { /* ... */ }, { languages: { css, js } });
+tokenizeSync(code, html, (str, type) => { /* ... */ }, { languages: { css, js } });
 ```
 
-This entry is synchronous and a `sub` referring to a language not given in `languages` is emitted as plain text.
+A language is either a definition array or `{ type, sub }`; a `sub` referring
+to a language not given in `languages` is emitted as plain text.
 
 ---
 
@@ -102,10 +106,10 @@ import ... from 'https://cdn.jsdelivr.net/gh/speed-highlight/core/dist/index.js'
 Use the [deno module](https://deno.land/x/speed_highlight_js)
 
 ```js
-import { printHighlight } from 'https://deno.land/x/speed_highlight_js/dist/terminal.js';
+import { highlightText } from 'https://deno.land/x/speed_highlight_js/dist/terminal.js';
 import theme from 'https://deno.land/x/speed_highlight_js/dist/themes/atom-dark.js';
 
-printHighlight('console.log("hello")', 'js', theme);
+console.log(await highlightText('console.log("hello")', 'js', theme));
 ```
 
 The theme argument is optional and defaults to the `default` theme.
@@ -121,9 +125,9 @@ npm i @speed-highlight/core
 ```
 
 ```js
-const { printHighlight } = require('@speed-highlight/core/terminal');
+const { highlightText } = require('@speed-highlight/core/terminal');
 
-printHighlight('console.log("hello")', 'js');
+console.log(await highlightText('console.log("hello")', 'js'));
 ```
 
 Pass a theme imported from `@speed-highlight/core/themes/[theme-name].js` as third argument to use another theme than the default one.
@@ -151,7 +155,7 @@ For the script part remove the prism.js script and replace it by a import and a 
 ```diff
 <body>
 -  <script src="prism.js"></script>
-+<script>
++<script type="module">
 +  import { highlightAll } from 'https://unpkg.com/@speed-highlight/core/dist/index.js';
 +  highlightAll();
 +</script>

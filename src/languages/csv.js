@@ -1,4 +1,4 @@
-export default [
+export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	{
 		expand: 'strDouble'
 	},
@@ -6,4 +6,4 @@ export default [
 		type: 'oper',
 		match: /,/g
 	}
-]
+]);

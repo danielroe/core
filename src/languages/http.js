@@ -1,6 +1,6 @@
-import { detectLanguage } from '../detect.js'
+import { detectLanguage } from '../detect.js';
 
-export default [
+export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	{
 		type: 'kwd',
 		match: /^(GET|HEAD|POST|PUT|DELETE|CONNECT|OPTIONS|TRACE|PATCH|PRI|SEARCH)\b/gm
@@ -27,4 +27,4 @@ export default [
 		match: /\n\n[^]*/g,
 		sub: detectLanguage
 	}
-]
+]);

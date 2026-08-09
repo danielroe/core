@@ -1,4 +1,6 @@
-export default [
+export default /** @satisfies {import('../index.js').ShjLanguageData} */ ({
+	type: 'oper',
+	sub: [
 	{
 		match: /^(?!\/).*/gm,
 		sub: 'todo'
@@ -15,5 +17,4 @@ export default [
 		type: 'var',
 		match: /\*|\+|\{\d+,\d+\}/g
 	}
-];
-export let type = 'oper';
+]});

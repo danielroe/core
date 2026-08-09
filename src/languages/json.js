@@ -1,4 +1,4 @@
-export default [
+export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	{
 		type: 'var',
 		match: /(("|')((?!\2)[^\r\n\\]|\\[^])*\2|[a-zA-Z]\w*)(?=\s*:)/g
@@ -17,4 +17,4 @@ export default [
 		type: 'bool',
 		match: /\b(true|false)\b/g
 	}
-]
+]);

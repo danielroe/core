@@ -1,9 +1,10 @@
+/** @type {import('../index.js').ShjRule} */
 let variable = {
 	type: 'var',
 	match: /\$\w+|\${[^}]*}|\$\([^)]*\)/g
 };
 
-export default [
+export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	{
 		sub: 'todo',
 		match: /#.*/g
@@ -48,4 +49,4 @@ export default [
 		match: /(?<=\s|^)[\w_]+(?=\s*=)/g
 	},
 	variable
-]
+]);

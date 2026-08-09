@@ -1,4 +1,6 @@
-export default [
+export default /** @satisfies {import('../index.js').ShjLanguageData} */ ({
+	type: 'str',
+	sub: [
 	{
 		match: new class {
 			exec(str) {
@@ -30,5 +32,4 @@ export default [
 			},
 		],
 	},
-];
-export let type = 'str';
+]});
