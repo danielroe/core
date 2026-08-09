@@ -1,4 +1,4 @@
-import col from './termcolor.js'
+import * as col from './termcolor.js'
 
 export default {
 	deleted: col.red,
