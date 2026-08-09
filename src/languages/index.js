@@ -18,7 +18,6 @@ export { default as http } from './http.js';
 export { default as ini } from './ini.js';
 export { default as java } from './java.js';
 export { default as js } from './js.js';
-export { default as js_template_literals } from './js_template_literals.js';
 export { default as jsdoc } from './jsdoc.js';
 export { default as json } from './json.js';
 export { default as leanpubMd } from './leanpub-md.js';
