@@ -31,7 +31,7 @@ export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 				sub: xmlElement.sub
 			},
 			{
-				match: RegExp(`${xmlElement.match}|[^]*(?=</style\\s*>$)`, 'g'),
+				match: /[^]*(?=<\/style\s*>$)/g,
 				sub: 'css'
 			},
 			xmlElement
@@ -45,7 +45,7 @@ export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 				sub: xmlElement.sub
 			},
 			{
-				match: RegExp(`${xmlElement.match}|[^]*(?=</script\\s*>$)`, 'g'),
+				match: /[^]*(?=<\/script\s*>$)/g,
 				sub: 'js'
 			},
 			xmlElement
