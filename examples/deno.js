@@ -1,6 +1,6 @@
 import { parse } from "https://deno.land/std/flags/mod.ts";
 import { fromFileUrl } from 'https://deno.land/std/path/mod.ts';
-import { highlightANSI } from '../src/terminal.js';
+import { highlightANSI } from '../src/index.js';
 import { languages, themesTerminal } from './data.js';
 
 let args = parse(Deno.args)

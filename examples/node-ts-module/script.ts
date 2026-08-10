@@ -1,4 +1,4 @@
-import { highlightANSI, ShjLanguage } from "@speed-highlight/core/terminal";
+import { highlightANSI, ShjLanguage } from "@speed-highlight/core";
 import theme from "@speed-highlight/core/themes/atom-dark.js";
 import { readFile } from "fs/promises";
 

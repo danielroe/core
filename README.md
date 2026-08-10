@@ -106,7 +106,7 @@ import ... from 'https://cdn.jsdelivr.net/gh/speed-highlight/core/dist/index.js'
 Use the [deno module](https://deno.land/x/speed_highlight_js)
 
 ```js
-import { highlightANSI } from 'https://deno.land/x/speed_highlight_js/dist/terminal.js';
+import { highlightANSI } from 'https://deno.land/x/speed_highlight_js/dist/index.js';
 import theme from 'https://deno.land/x/speed_highlight_js/dist/themes/atom-dark.js';
 
 console.log(await highlightANSI('console.log("hello")', 'js', theme));
@@ -125,7 +125,7 @@ npm i @speed-highlight/core
 ```
 
 ```js
-const { highlightANSI } = require('@speed-highlight/core/terminal');
+const { highlightANSI } = require('@speed-highlight/core');
 
 console.log(await highlightANSI('console.log("hello")', 'js'));
 ```

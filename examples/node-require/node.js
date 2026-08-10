@@ -1,6 +1,6 @@
 const fs = require('fs'),
 	path = require('path'),
-	{ highlightANSI } = require('@speed-highlight/core/terminal');
+	{ highlightANSI } = require('@speed-highlight/core');
 
 const lang = process.argv[2] ?? 'js';
 const code = fs.readFileSync(path.resolve(__dirname, `../languages/test.${lang}`));

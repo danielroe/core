@@ -153,6 +153,32 @@ export let highlightAll = async (opt) =>
 		.map(elm => highlightElement(elm, undefined, undefined, opt)))
 
 /**
+ * A theme, mapping each token type to the ANSI escape printed before it
+ * @typedef {Partial<Record<ShjToken, string>>} ShjTerminalTheme
+ */
+
+/**
+ * Highlight a string passed as argument and return a string that can directly
+ * be printed in a terminal, bundled languages are loaded on first use
+ *
+ * @async
+ * @function highlightANSI
+ * @param {string} src The code
+ * @param {ShjLanguage|ShjLanguageData} lang The language of the code
+ * @param {ShjTerminalTheme} [theme] The theme to use, e.g. imported from `themes/atom-dark.js`,
+ * the default theme is only loaded when none is given
+ * @returns {Promise<string>} The highlighted string
+ */
+export const highlightANSI = async (src, lang, theme) => {
+	let res = '';
+
+	theme ??= (await import('./themes/default.js')).default;
+	await tokenize(src, lang, (str, token) => res += token ? `${theme[token] ?? ''}${str}\x1b[0m` : str);
+
+	return res;
+};
+
+/**
  * Replace how language names are loaded, call it before highlighting
  *
  * @example

@@ -14,11 +14,6 @@
       "import": "./dist/detect.js",
       "require": "./dist/node/detect.js"
     },
-    "./terminal": {
-      "types": "./dist/terminal.d.ts",
-      "import": "./dist/terminal.js",
-      "require": "./dist/node/terminal.js"
-    },
     "./tokenize": {
       "types": "./dist/tokenize.d.ts",
       "import": "./dist/tokenize.js",
