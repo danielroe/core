@@ -21,18 +21,14 @@ if (args.help)
 	Deno.exit(0)
 }
 
-let theme;
-
-if (args.theme)
-{
-	if (!themesTerminal.includes(args.theme))
+if (args.theme && !themesTerminal.includes(args.theme))
 	{
 		console.error(`'${args.theme}' is not a supported try on of the following theme:`)
 		console.log(`${themesTerminal.join(', ')}`)
 		Deno.exit(1)
 	}
-	theme = (await import(`../src/themes/${args.theme}.js`)).default
-}
+
+const theme = (await import(`../src/themes/${args.theme ?? 'default'}.js`)).default;
 
 if (args.lang && !languages.includes(args.lang))
 {

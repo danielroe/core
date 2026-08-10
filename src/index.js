@@ -165,14 +165,12 @@ export let highlightAll = async (opt) =>
  * @function highlightANSI
  * @param {string} src The code
  * @param {ShjLanguage|ShjLanguageData} lang The language of the code
- * @param {ShjTerminalTheme} [theme] The theme to use, e.g. imported from `themes/atom-dark.js`,
- * the default theme is only loaded when none is given
+ * @param {ShjTerminalTheme} theme The theme to use, e.g. imported from `themes/atom-dark.js`
  * @returns {Promise<string>} The highlighted string
  */
 export const highlightANSI = async (src, lang, theme) => {
 	let res = '';
 
-	theme ??= (await import('./themes/default.js')).default;
 	await tokenize(src, lang, (str, token) => res += token ? `${theme[token] ?? ''}${str}\x1b[0m` : str);
 
 	return res;
