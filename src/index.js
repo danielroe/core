@@ -164,13 +164,3 @@ export let highlightAll = async (opt) =>
 export let setLoader = newLoader => {
 	loader = newLoader;
 }
-
-/**
- * @deprecated Use `setLoader` instead
- * @function loadLanguage
- * @param {string} languageName The name of the language
- * @param {ShjLanguageData|{ default: ShjLanguageData }} language The language, or its module
- */
-export let loadLanguage = (languageName, language) => {
-	cache[languageName] = language;
-}
