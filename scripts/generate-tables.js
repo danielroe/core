@@ -61,33 +61,36 @@ const parseDetectedLanguages = () => {
 
 const buildLanguagesTable = () => {
 	const detected = parseDetectedLanguages();
-	const rows = parseLanguageFiles().map(file => {
+	const files = parseLanguageFiles();
+	const rows = files.map(file => {
 		const { name, support } = parseLanguageMeta(file);
 		const cssClass = `\`shj-lang-${file}\``;
 		const detection = detected.has(file) ? '✅' : '❌';
 		const size = sizeCell(`dist/languages/${file}.js`, `src/languages/${file}.js`);
 		return `| ${name} | ${cssClass} | ${support} | ${detection} | ${size} |`;
 	});
+	const total = files.reduce((sum, file) => sum + (gzipSizeOf(`dist/languages/${file}.js`) ?? 0), 0);
 
 	return [
-		'| Name | [CSS Class](#web) | Support | Detection | Size (gzip) |',
+		`| Name | [CSS Class](#web-usage) | Support | Detection | Size (gzip, ${formatSize(total)} total) |`,
 		'| --- | --- | --- | --- | --- |',
 		...rows
 	].join('\n');
 };
 
-const parseThemeNames = varName => {
-	const source = readFile('examples/data.js');
-	const arrayBody = source.match(new RegExp(`export const ${varName} = \\[([^\\]]*)\\]`))?.[1];
-	if (arrayBody === undefined)
-		throw new Error(`Could not find "${varName}" in examples/data.js`);
-	return [...arrayBody.matchAll(/'([^']+)'/g)].map(match => match[1]);
-};
+// default first so the table starts with what users get out of the box
+const themeOrder = (a, b) => (b === 'default') - (a === 'default') || a.localeCompare(b);
+
+const parseThemeNames = extension =>
+	fs.readdirSync(path.join(root, 'src/themes'))
+		.filter(file => file.endsWith(extension) && file !== 'termcolor.js')
+		.map(file => file.slice(0, -extension.length))
+		.sort(themeOrder);
 
 const buildThemesTable = () => {
-	const browser = parseThemeNames('themesBrowser');
-	const terminal = parseThemeNames('themesTerminal');
-	const names = [...new Set([...browser, ...terminal])];
+	const browser = parseThemeNames('.css');
+	const terminal = parseThemeNames('.js');
+	const names = [...new Set([...browser, ...terminal])].sort(themeOrder);
 
 	const rows = names.map(name => {
 		const term = supportCell(terminal.includes(name), `dist/themes/${name}.js`, `src/themes/${name}.js`);
