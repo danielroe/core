@@ -7,18 +7,25 @@ npm i
 in_dir=./src
 out_dir=./dist
 
-esbuild_options="--bundle --minify"
+esbuild_options="--bundle --minify --external:./languages/* --external:./themes/*  --external:./index.js"
 
 minify_js () {
 	file=$1
+	opts="$esbuild_options"
+	case $file in
+		# the barrel must stay a re-export file (its imports are written
+		# ./asm.js so the global externals do not match them), inlining it
+		# would destroy the module graph consumers tree-shake on
+		*/languages/index.js) opts="$esbuild_options --external:./*" ;;
+	esac
 	out=${file/${in_dir}/${out_dir}}
 	out=${out/.ts/.js}
 	mkdir -p $(dirname $out)
-	npx esbuild $file $esbuild_options --format=esm --target=es2020 --outfile=$out
+	npx esbuild $file $opts --format=esm --target=es2020 --outfile=$out
 
 	node=${file/${in_dir}/"${out_dir}/node"}
 	mkdir -p $(dirname $node)
-	npx esbuild $file $esbuild_options --format=cjs --platform=node --target=node12 --outfile=$node
+	npx esbuild $file $opts --format=cjs --platform=node --target=node12 --outfile=$node
 }
 
 rm -rf $out_dir
