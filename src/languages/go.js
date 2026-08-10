@@ -30,6 +30,6 @@ export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	},
 	{
 		type: 'oper',
-		match: /[+\-*\/%&|^~=!<>.^-]+/g
+		match: /:=|[+\-*\/%&|^~=!<>.^-]+/g
 	}
 ]);
