@@ -4,9 +4,9 @@
 
 A JavaScript syntax highlighter for the web and the terminal
 
-- **Tiny** <small>(~2kB core, ~1kB per language)</small>
-- **Fast** <small>(outperforms Prism and highlight.js)</small>
-- **Simple** <small>(zero dependencies)</small>
+- **Tiny** (~2kB core, ~1kB per language)
+- **Fast** (outperforms Prism and highlight.js)
+- **Simple** (zero dependencies)
 
 <p>
 	<a href="https://speed-highlight.github.io/core/examples">Demo</a> |
