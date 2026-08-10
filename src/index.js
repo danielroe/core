@@ -80,22 +80,18 @@ const cache = /** @type {Object<string, ReturnType<ShjLanguageLoader>>} */ ({}),
  * @param {ShjTokenCallback} onToken Called with the text and type of each token
  */
 export async function tokenize(src, lang, onToken) {
-	let data,
-		it = tokenizer(src, lang, onToken),
+	let it = tokenizer(src, lang, onToken),
 		res = it.next();
 
 	while (!res.done) {
-		let name = /** @type {string} */ (res.value);
+		let name = /** @type {string} */ (res.value),
+			data;
 		try {
 			// the loader is only called on cache misses, import() can throw
 			// synchronously when bundled so it cannot be a catch on the promise
 			data = /** @type {{ default?: ShjLanguageData, sub?: ShjGrammar }|undefined} */ (await (cache[name] ??= loader(name)));
 		}
-		catch {
-			data = undefined;
-		}
-		if (data === undefined)
-			console.warn(`[speed-highlight] unknown language "${name}"`);
+		catch {}
 		res = it.next(/** @type {ShjLanguageData|undefined} */ (data?.default ?? data));
 	}
 }
