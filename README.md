@@ -2,7 +2,7 @@
 
 [![NPM Version](https://badge.fury.io/js/@speed-highlight%2Fcore.svg)](https://www.npmjs.com/package/@speed-highlight/core) [![NPM Downloads](https://img.shields.io/npm/dm/%40speed-highlight%2Fcore)](https://www.npmjs.com/package/@speed-highlight/core)
 
-A JavaScript syntax highlighter for the web and the terminal
+A tiny, fast, simple syntax highlighter for the web and the terminal in JavaScript
 
 - **Tiny** (~2kB core, ~1kB per language)
 - **Fast** (outperforms Prism and highlight.js)
