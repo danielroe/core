@@ -103,17 +103,17 @@ export async function tokenize(src, lang, onToken) {
 /**
  * Highlight a string passed as argument and return it
  * @example
- * elm.innerHTML = await highlightText(code, 'js');
+ * elm.innerHTML = await highlightHTML(code, 'js');
  *
  * @async
- * @function highlightText
+ * @function highlightHTML
  * @param {string} src The code
  * @param {ShjLanguage|ShjLanguageData} lang The language of the code
  * @param {Boolean} [multiline=true] If it is multiline, it will add a wrapper for the line numbering and header
  * @param {ShjOptions} [opt={}] Customization options
  * @returns {Promise<string>} The highlighted string
  */
-export async function highlightText(src, lang, multiline = true, opt = {}) {
+export async function highlightHTML(src, lang, multiline = true, opt = {}) {
 	let tmp = ''
 	await tokenize(src, lang, (str, type) => tmp += toSpan(sanitize(str), type))
 
@@ -123,7 +123,7 @@ export async function highlightText(src, lang, multiline = true, opt = {}) {
 }
 
 /**
- * Highlight a DOM element by getting the new innerHTML with highlightText
+ * Highlight a DOM element by getting the new innerHTML with highlightHTML
  *
  * @async
  * @function highlightElement
@@ -137,7 +137,7 @@ export async function highlightElement(elm, lang = /** @type {ShjLanguage} */ (e
 	mode ??= `${elm.tagName == 'CODE' ? 'in' : (txt.split('\n').length < 2 ? 'one' : 'multi')}line`;
 	/** @type {HTMLElement} */ (elm).dataset.lang = lang;
 	elm.className = `${[...elm.classList].filter(className => !className.startsWith('shj-')).join(' ')} shj-lang-${lang} shj-${mode}`;
-	elm.innerHTML = await highlightText(txt, lang, mode == 'multiline', opt);
+	elm.innerHTML = await highlightHTML(txt, lang, mode == 'multiline', opt);
 }
 
 /**

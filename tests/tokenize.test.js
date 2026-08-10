@@ -5,7 +5,6 @@ import { tokenize as tokenizeAsync } from '../src/index.js';
 import css from '../src/languages/css.js';
 import html from '../src/languages/html.js';
 import js from '../src/languages/js.js';
-import js_template_literals from '../src/languages/js_template_literals.js';
 import jsdoc from '../src/languages/jsdoc.js';
 import json from '../src/languages/json.js';
 import regex from '../src/languages/regex.js';
@@ -13,7 +12,7 @@ import todo from '../src/languages/todo.js';
 import { tokenizeSync } from '../src/tokenize.js';
 
 let fixtures = new URL('../examples/languages/', import.meta.url),
-	languages = { css, html, js, js_template_literals, jsdoc, json, regex, todo },
+	languages = { css, html, js, jsdoc, json, regex, todo },
 	read = file => readFileSync(new URL(file, fixtures), 'utf8'),
 	collect = (src, lang, opt) => {
 		let tokens = [];

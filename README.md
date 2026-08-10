@@ -106,10 +106,10 @@ import ... from 'https://cdn.jsdelivr.net/gh/speed-highlight/core/dist/index.js'
 Use the [deno module](https://deno.land/x/speed_highlight_js)
 
 ```js
-import { highlightText } from 'https://deno.land/x/speed_highlight_js/dist/terminal.js';
+import { highlightANSI } from 'https://deno.land/x/speed_highlight_js/dist/terminal.js';
 import theme from 'https://deno.land/x/speed_highlight_js/dist/themes/atom-dark.js';
 
-console.log(await highlightText('console.log("hello")', 'js', theme));
+console.log(await highlightANSI('console.log("hello")', 'js', theme));
 ```
 
 The theme argument is optional and defaults to the `default` theme.
@@ -125,9 +125,9 @@ npm i @speed-highlight/core
 ```
 
 ```js
-const { highlightText } = require('@speed-highlight/core/terminal');
+const { highlightANSI } = require('@speed-highlight/core/terminal');
 
-console.log(await highlightText('console.log("hello")', 'js'));
+console.log(await highlightANSI('console.log("hello")', 'js'));
 ```
 
 Pass a theme imported from `@speed-highlight/core/themes/[theme-name].js` as third argument to use another theme than the default one.

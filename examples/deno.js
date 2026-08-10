@@ -1,6 +1,6 @@
 import { parse } from "https://deno.land/std/flags/mod.ts";
 import { fromFileUrl } from 'https://deno.land/std/path/mod.ts';
-import { highlightText } from '../src/terminal.js';
+import { highlightANSI } from '../src/terminal.js';
 import { languages, themesTerminal } from './data.js';
 
 let args = parse(Deno.args)
@@ -57,10 +57,10 @@ if (args.stdin)
 	language = args.lang ?? args._[0]?.split?.('.')?.[1] ?? 'js';
 }
 
-console.log(await highlightText(code, language, theme));
+console.log(await highlightANSI(code, language, theme));
 
 console.time('highlight')
 for (let i = 0; i < 100; i++) {
-	await highlightText(code, language, theme);
+	await highlightANSI(code, language, theme);
 }
 console.timeEnd('highlight')
