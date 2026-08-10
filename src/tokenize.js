@@ -132,6 +132,7 @@ export function* tokenizer(src, lang, onToken) {
  * @example
  * import json from '@speed-highlight/core/languages/json.js';
  * import { tokenizeSync } from '@speed-highlight/core/tokenize';
+ * import process from 'node:process';
  *
  * tokenizeSync(src, json, (str, type) => process.stdout.write(str));
  *
