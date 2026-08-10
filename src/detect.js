@@ -15,8 +15,8 @@ const languages = {
 	bash: [[/#!(\/usr)?\/bin\/bash/g, 500], [/\b(if|elif|then|fi|echo)\b|\$/g, 10]],
 	html: [[/<\/?[a-z-]+[^\n>]*>/g, 10], [/^\s+<!DOCTYPE\s+html/g, 500]],
 	http: [[/^(GET|HEAD|POST|PUT|DELETE|PATCH|HTTP)\b/g, 500]],
-	js: [[/\b(console|await|async|function|export|import|this|class|for|let|const|map|join|require|document|window)\b/g, 10]],
-	ts: [[/\b(console|await|async|function|export|import|this|class|for|let|const|map|join|require|document|window|implements|interface|namespace)\b/g, 10]],
+	// js: [[/\b(console|await|async|function|export|import|this|class|for|let|const|map|join|require|document|window)\b/g, 10]],
+	ts: [[/\b(console|await|async|function|export|import|this|class|for|let|const|map|join|require|document|window|implements|interface|namespace|true|false|null)\b/g, 10]],
 	py: [[/\b(def|print|await|async|class|and|or|lambda|import|from|self|asyncio|pass|True|False|None|__init__)\b/g, 10]],
 	sql: [[/\b(SELECT|INSERT|FROM)\b/g, 50]],
 	pl: [[/#!(\/usr)?\/bin\/perl/g, 500], [/\b(use|print)\b|\$/g, 10]],
@@ -33,7 +33,7 @@ const languages = {
 	go: [[/\b(func|fmt|package)\b/g, 100]],
 	java: [[/^import\s+java/gm, 500]],
 	asm: [[/^(section|global main|extern|\t(call|mov|ret))/gm, 100]],
-	json: [[/\b(true|false|null|\{})\b|\"[^"]+\":/g, 10]],
+	// json: [[/\b(true|false|null)\b|\"[^"]+\":/g, 10]],
 	yaml: [[/^(\s+)?[a-z][a-z0-9]*:/gmi, 10]]
 }
 
