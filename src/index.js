@@ -40,7 +40,8 @@
  * @property {boolean} [block=true] Render as a block, with the line numbering
  * and header wrapper, rather than inline. `highlightElement` defaults it from
  * the element instead: a `code` element is inline, anything else is a block
- * @property {boolean} [showLineNumbers=true] Indicates whether to show line numbers
+ * @property {boolean} [showLineNumbers=false] Indicates whether to number the
+ * lines, in a gutter laid out inside the block
  */
 
 import { tokenizer } from './tokenize.js';
@@ -120,7 +121,7 @@ export async function highlightHTML(src, lang, opt = {}) {
 	await tokenize(src, lang, (str, type) => tmp += toSpan(sanitize(str), type))
 
 	return (opt.block ?? true)
-		? `<div><div class="shj-numbers">${'<div></div>'.repeat((opt.showLineNumbers ?? true) ? src.split('\n').length : 0)}</div><div>${tmp}</div></div>`
+		? `<div><div class="shj-numbers">${'<div></div>'.repeat(opt.showLineNumbers ? src.split('\n').length : 0)}</div><div>${tmp}</div></div>`
 		: tmp;
 }
 

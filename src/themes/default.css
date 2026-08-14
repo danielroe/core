@@ -41,7 +41,8 @@
 	text-align: right;
 	counter-reset: line
 }
-/* showLineNumbers off still emits the column, so it must take no room at all */
+/* the column is emitted either way, and numbers are off by default, so the
+   empty one must take no room at all */
 .shj-numbers:empty {display: none}
 .shj-numbers div::before {
 	color: #999;

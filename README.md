@@ -116,7 +116,7 @@ For per-element control use `highlightElement`. It renders a `code` element inli
 ```js
 import { highlightElement } from '@speed-highlight/core';
 
-await highlightElement(element, 'js', { showLineNumbers: false });
+await highlightElement(element, 'js', { showLineNumbers: true });
 ```
 
 ### Detect the language
@@ -220,7 +220,7 @@ The main entry covers most apps; reach for `/tokenize` when you want the raw tok
 | [`.../themes/*.css`](src/themes/) | | Web themes |
 | [`.../themes/*.js`](src/themes/) | | Terminal themes, plus `termcolor.js` helpers |
 
-`lang` is a name (`'js'`) or a grammar object passed directly. `opt` is `{ block?: boolean, showLineNumbers?: boolean }`, both `true` by default, except that `highlightElement` and `highlightAll` read `block` off the element instead: a `code` element is inline, anything else is a block.
+`lang` is a name (`'js'`) or a grammar object passed directly. `opt` is `{ block?: boolean, showLineNumbers?: boolean }`: line numbers are opt-in, `block` defaults to `true`, except that `highlightElement` and `highlightAll` read it off the element instead, where a `code` element is inline and anything else is a block.
 
 ## Languages
 
@@ -341,8 +341,8 @@ Display-mode hooks: `.shj-inline` (inside `code`), `.shj-block`, and `.shj-numbe
 | `loadLanguage(name, grammar)` | `setLoader(...)` or pass the grammar directly as `lang` |
 | `@speed-highlight/core/terminal` entry | merged into `@speed-highlight/core` |
 | `common.js` shared patterns | `{ expand: 'num' \| 'str' \| 'strDouble' }` built into the tokenizer |
-| `{ hideLineNumbers: true }` | `{ showLineNumbers: false }` |
-| `oneline` display mode | removed, a `div` is always a block (pass `{ showLineNumbers: false }` for a bare one) |
+| `{ hideLineNumbers: true }` | now the default, line numbers are opt-in with `{ showLineNumbers: true }` |
+| `oneline` display mode | removed, a `div` is always a block |
 | `highlightElement(elm, lang, mode, opt)` | the mode moved into the options: `highlightElement(elm, lang, { block })` |
 | `shj-multiline` class | `shj-block` |
 
