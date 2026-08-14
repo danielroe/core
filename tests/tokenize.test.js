@@ -2,13 +2,7 @@ import { deepStrictEqual } from 'node:assert';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { tokenize as tokenizeAsync } from '../src/index.js';
-import css from '../src/languages/css.js';
-import html from '../src/languages/html.js';
-import js from '../src/languages/js.js';
-import jsdoc from '../src/languages/jsdoc.js';
-import json from '../src/languages/json.js';
-import regex from '../src/languages/regex.js';
-import todo from '../src/languages/todo.js';
+import { css, html, js, jsdoc, json, regex, todo } from '../src/languages/index.js';
 import { tokenizeSync } from '../src/tokenize.js';
 
 let fixtures = new URL('../examples/languages/', import.meta.url),
@@ -50,11 +44,11 @@ test('a language can be given by name', async () => {
 	deepStrictEqual(collect(src, 'js', { languages }), await collectAsync(src, 'js'));
 });
 
-test('a language can be given bare or wrapped in a sub', async () => {
+test('a language can be given as a definition or as its module', async () => {
 	let src = read('test.json');
 
 	deepStrictEqual(
-		collect(src, 'json', { languages: { json: { sub: json } } }),
+		collect(src, 'json', { languages: { json } }),
 		collect(src, 'json', { languages }));
 });
 
@@ -69,8 +63,10 @@ test('the type of a language applies to the text it does not match', () => {
 });
 
 test('a sub that is not given is emitted as plain text', () => {
-	deepStrictEqual(collect('// TODO stuff', { sub: js }), [
+	deepStrictEqual(collect('"test"\n// TODO stuff', { sub: js }), [
 		[undefined, ''],
+		["str", '"test"'],
+		[undefined, '\n'],
 		[undefined, '// TODO stuff'],
 		[undefined, '']
 	]);
