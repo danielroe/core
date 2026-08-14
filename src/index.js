@@ -70,7 +70,7 @@ export function setLoader(newLoader) {
 
 const cache = /** @type {Object<string, ReturnType<ShjLanguageLoader>>} */ ({}),
 	sanitize = (str = '') =>
-		str.replaceAll('&', '&#38;').replaceAll?.('<', '&lt;').replaceAll?.('>', '&gt;'),
+		str.replaceAll('&', '&#38;').replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
 	/**
 	 * Create a HTML element with the right token styling
 	 *
