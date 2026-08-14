@@ -1,7 +1,11 @@
 import { parse } from "https://deno.land/std/flags/mod.ts";
 import { fromFileUrl } from 'https://deno.land/std/path/mod.ts';
 import { highlightANSI } from '../src/index.js';
-import { languages, themesTerminal } from './data.js';
+
+const languages = ['js', 'py', 'bash', 'ts', 'c', 'css', 'asm', 'csv', 'diff', 'docker', 'git', 'go',
+	'html', 'http', 'ini', 'java', 'jsdoc', 'json', 'leanpub-md', 'bf', 'log', 'lua', 'make', 'md',
+	'pl', 'plain', 'regex', 'rs', 'sql', 'todo', 'toml', 'uri', 'xml', 'yaml'];
+const themesTerminal = ['default', 'atom-dark'];
 
 let args = parse(Deno.args)
 
@@ -22,11 +26,11 @@ if (args.help)
 }
 
 if (args.theme && !themesTerminal.includes(args.theme))
-	{
-		console.error(`'${args.theme}' is not a supported try on of the following theme:`)
-		console.log(`${themesTerminal.join(', ')}`)
-		Deno.exit(1)
-	}
+{
+	console.error(`'${args.theme}' is not a supported try on of the following theme:`)
+	console.log(`${themesTerminal.join(', ')}`)
+	Deno.exit(1)
+}
 
 const theme = (await import(`../src/themes/${args.theme ?? 'default'}.js`)).default;
 
