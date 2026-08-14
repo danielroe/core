@@ -51,7 +51,10 @@ const parseLanguageMeta = file => {
 	if (!name)
 		throw new Error(`src/languages/${file}.js is missing a "@name" doc comment, needed to generate the README table`);
 	const support = comment.match(/@support\s+(.+)/)?.[1]?.trim() ?? '';
-	return { name, support };
+	// a language can spell out its own Detection cell, for the cases the
+	// detect.js scan gets wrong (js is detected, but reported as ts)
+	const detect = comment.match(/@detect\s+(.+)/)?.[1]?.trim();
+	return { name, support, detect };
 };
 
 const parseDetectedLanguages = () => {
@@ -63,9 +66,11 @@ const buildLanguagesTable = () => {
 	const detected = parseDetectedLanguages();
 	const files = parseLanguageFiles();
 	const rows = files.map(file => {
-		const { name, support } = parseLanguageMeta(file);
+		const { name, support, detect } = parseLanguageMeta(file);
 		const cssClass = `\`shj-lang-${file}\``;
-		const detection = detected.has(file) ? '✅' : '❌';
+		// an explicit @detect wins, remove it if the language gets a real
+		// entry in detect.js
+		const detection = detect ?? (detected.has(file) ? '✅' : '❌');
 		const size = sizeCell(`dist/languages/${file}.js`, `src/languages/${file}.js`);
 		return `| ${name} | ${cssClass} | ${support} | ${detection} | ${size} |`;
 	});
