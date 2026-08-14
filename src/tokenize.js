@@ -68,13 +68,14 @@ const expandData = {
  * @returns {Generator<string, void, ShjLanguageData|undefined>}
  */
 export function* tokenizer(src, lang, onToken) {
+	// outside the try so the catch can emit only what is left
+	let i = 0;
 	try {
 		let m,
 			part,
 			first = {},
 			match,
 			cache = [],
-			i = 0,
 			// an unknown language leaves data undefined, the throw makes the catch emit plain text
 			data = /** @type {any} */ (typeof lang === 'string' ? yield lang : lang),
 			// make a fast shallow copy to be able to splice it without changing the original one
@@ -109,16 +110,20 @@ export function* tokenizer(src, lang, onToken) {
 			if (first.index === null)
 				break;
 			onToken(src.slice(i, first.index), data.type);
-			i = first.end;
+			// consume the text before the match now, the match itself only once
+			// it is emitted, so a throw in a sub resumes on the match and never
+			// repeats or drops it
+			i = first.index;
 			if (first.part.sub)
 				yield* tokenizer(first.match, typeof first.part.sub === 'string' ? first.part.sub : (typeof first.part.sub === 'function' ? first.part.sub(first.match) : first.part), onToken);
 			else
 				onToken(first.match, first.part.type);
+			i = first.end;
 		}
 		onToken(src.slice(i, src.length), data.type);
 	}
 	catch {
-		onToken(src);
+		onToken(src.slice(i));
 	}
 }
 
