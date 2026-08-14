@@ -1,9 +1,4 @@
 /**
- * @module detect
- * (Language detector)
-*/
-
-/**
  * @typedef {import('./index.js').ShjLanguage} ShjLanguage
  * @typedef {import('./index.js').ShjBuiltinLanguage} ShjBuiltinLanguage
  */
@@ -40,11 +35,10 @@ const languages = {
 /**
  * Try to find the language the given code belong to
  *
- * @function detectLanguage
  * @param {string} code The code
  * @returns {ShjLanguage} The language of the code
  */
-export const detectLanguage = code => {
+export function detectLanguage(code) {
 	return (Object.entries(languages)
 		.map(([lang, features]) => /** @type {[ShjLanguage, number]} */ ([
 			lang,

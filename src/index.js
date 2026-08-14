@@ -1,9 +1,4 @@
 /**
- * @module index
- * (Base script)
-*/
-
-/**
  * Languages bundled by default
  * @typedef {('asm'|'bash'|'bf'|'c'|'css'|'csv'|'diff'|'docker'|'git'|'go'|'html'|'http'|'ini'|'java'|'js'|'jsdoc'|'json'|'leanpub-md'|'log'|'lua'|'make'|'md'|'pl'|'plain'|'py'|'regex'|'rs'|'sql'|'todo'|'toml'|'ts'|'uri'|'xml'|'yaml')} ShjBuiltinLanguage
  */
@@ -14,6 +9,9 @@
  */
 
 /**
+ * Republished from `tokenize.js` so writing a custom language only
+ * takes the main entry, even for the types it never mentions itself
+ *
  * @typedef {import('./tokenize.js').ShjToken} ShjToken
  * @typedef {import('./tokenize.js').ShjMatcher} ShjMatcher
  * @typedef {import('./tokenize.js').ShjLanguageData} ShjLanguageData
@@ -33,8 +31,19 @@
  */
 
 /**
+ * A theme, mapping each token type to the ANSI escape printed before it
+ * @typedef {Partial<Record<ShjToken, string>>} ShjTerminalTheme
+ */
+
+/**
  * @typedef {Object} ShjOptions
- * @property {boolean} [hideLineNumbers=false] Indicates whether to hide line numbers
+ * @property {boolean} [showLineNumbers=true] Indicates whether to show line numbers
+ */
+
+/**
+ * Options of `highlightHTML`, which is the only entry choosing its own
+ * display mode: the others derive it from the element
+ * @typedef {ShjOptions & { multiline?: boolean }} ShjHtmlOptions
  */
 
 /**
@@ -56,14 +65,24 @@ export const defaultLoader = name => import(`./languages/${name}.js`);
 
 let loader = defaultLoader;
 
+/**
+ * Replace how language names are loaded, call it before highlighting
+ *
+ * @example
+ * setLoader(name => customs[name] ?? defaultLoader(name));
+ *
+ * @param {ShjLanguageLoader} newLoader Given a name, returns the language, its module, or a promise of either
+ */
+export function setLoader(newLoader) {
+	loader = newLoader;
+}
+
 const cache = /** @type {Object<string, ReturnType<ShjLanguageLoader>>} */ ({}),
 	sanitize = (str = '') =>
 		str.replaceAll('&', '&#38;').replaceAll?.('<', '&lt;').replaceAll?.('>', '&gt;'),
 	/**
 	 * Create a HTML element with the right token styling
 	 *
-	 * @function
-	 * @ignore
 	 * @param {string} str The content (need to be sanitized)
 	 * @param {ShjToken} [token] The type of token
 	 * @returns A HTML string
@@ -74,10 +93,10 @@ const cache = /** @type {Object<string, ReturnType<ShjLanguageLoader>>} */ ({}),
  * Find the tokens in the given code and call the given callback,
  * bundled languages are loaded on first use
  *
- * @function tokenize
  * @param {string} src The code
  * @param {ShjLanguage|ShjLanguageData} lang The language of the code
  * @param {ShjTokenCallback} onToken Called with the text and type of each token
+ * @returns {Promise<void>} Resolves once every token has been emitted
  */
 export async function tokenize(src, lang, onToken) {
 	let it = tokenizer(src, lang, onToken),
@@ -101,86 +120,62 @@ export async function tokenize(src, lang, onToken) {
  * @example
  * elm.innerHTML = await highlightHTML(code, 'js');
  *
- * @async
- * @function highlightHTML
  * @param {string} src The code
  * @param {ShjLanguage|ShjLanguageData} lang The language of the code
- * @param {Boolean} [multiline=true] If it is multiline, it will add a wrapper for the line numbering and header
- * @param {ShjOptions} [opt={}] Customization options
+ * @param {ShjHtmlOptions} [opt={}] Customization options, `multiline` (default `true`) adds a wrapper for the line numbering and header
  * @returns {Promise<string>} The highlighted string
  */
-export async function highlightHTML(src, lang, multiline = true, opt = {}) {
+export async function highlightHTML(src, lang, opt = {}) {
 	let tmp = ''
 	await tokenize(src, lang, (str, type) => tmp += toSpan(sanitize(str), type))
 
-	return multiline
-		? `<div><div class="shj-numbers">${'<div></div>'.repeat(!opt.hideLineNumbers && src.split('\n').length)}</div><div>${tmp}</div></div>`
+	return (opt.multiline ?? true)
+		? `<div><div class="shj-numbers">${'<div></div>'.repeat((opt.showLineNumbers ?? true) ? src.split('\n').length : 0)}</div><div>${tmp}</div></div>`
 		: tmp;
 }
 
 /**
  * Highlight a DOM element by getting the new innerHTML with highlightHTML
  *
- * @async
- * @function highlightElement
  * @param {Element} elm The DOM element
- * @param {ShjLanguage} [lang] The language of the code (seaching by default on `elm` for a 'shj-lang-' class)
+ * @param {ShjLanguage} [lang] The language of the code (searching by default on `elm` for a 'shj-lang-' class)
  * @param {ShjDisplayMode} [mode] The display mode (guessed by default)
  * @param {ShjOptions} [opt={}] Customization options
+ * @returns {Promise<void>} Resolves once the element has been highlighted
  */
 export async function highlightElement(elm, lang = /** @type {ShjLanguage} */ (elm.className.match(/shj-lang-([\w-]+)/)?.[1]), mode, opt) {
 	let txt = elm.textContent;
 	mode ??= `${elm.tagName == 'CODE' ? 'in' : (txt.split('\n').length < 2 ? 'one' : 'multi')}line`;
 	/** @type {HTMLElement} */ (elm).dataset.lang = lang;
 	elm.className = `${[...elm.classList].filter(className => !className.startsWith('shj-')).join(' ')} shj-lang-${lang} shj-${mode}`;
-	elm.innerHTML = await highlightHTML(txt, lang, mode == 'multiline', opt);
+	elm.innerHTML = await highlightHTML(txt, lang, { ...opt, multiline: mode == 'multiline' });
 }
 
 /**
  * Call highlightElement on element with a css class starting with `shj-lang-`
  *
- * @async
- * @function highlightAll
  * @param {ShjOptions} [opt={}] Customization options
+ * @returns {Promise<void[]>} Resolves once every element has been highlighted
  */
-export let highlightAll = async (opt) =>
-	Promise.all(
+export async function highlightAll(opt) {
+	return Promise.all(
 		Array.from(document.querySelectorAll('[class*="shj-lang-"]'))
-		.map(elm => highlightElement(elm, undefined, undefined, opt)))
-
-/**
- * A theme, mapping each token type to the ANSI escape printed before it
- * @typedef {Partial<Record<ShjToken, string>>} ShjTerminalTheme
- */
+		.map(elm => highlightElement(elm, undefined, undefined, opt)));
+}
 
 /**
  * Highlight a string passed as argument and return a string that can directly
  * be printed in a terminal, bundled languages are loaded on first use
  *
- * @async
- * @function highlightANSI
  * @param {string} src The code
  * @param {ShjLanguage|ShjLanguageData} lang The language of the code
  * @param {ShjTerminalTheme} theme The theme to use, e.g. imported from `themes/atom-dark.js`
  * @returns {Promise<string>} The highlighted string
  */
-export const highlightANSI = async (src, lang, theme) => {
+export async function highlightANSI(src, lang, theme) {
 	let res = '';
 
 	await tokenize(src, lang, (str, token) => res += token ? `${theme[token] ?? ''}${str}\x1b[0m` : str);
 
 	return res;
-};
-
-/**
- * Replace how language names are loaded, call it before highlighting
- *
- * @example
- * setLoader(name => customs[name] ?? defaultLoader(name));
- *
- * @function setLoader
- * @param {ShjLanguageLoader} newLoader Given a name, returns the language, its module, or a promise of either
- */
-export let setLoader = newLoader => {
-	loader = newLoader;
 }

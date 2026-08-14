@@ -1,7 +1,4 @@
-/**
- * @module tokenize
- * (Registry free tokenizer)
-*/
+/** Registry free tokenizer */
 
 /**
  * Token types
@@ -15,12 +12,8 @@
  */
 
 /**
- * A language: its grammar alone, or with the type
- * given to the text the grammar does not match
- * @typedef {ShjGrammar | { type?: ShjToken, sub: ShjGrammar }} ShjLanguageData
- */
-
-/**
+ * One rule: a pattern to tag with a token type, one of the shared
+ * patterns reused by name, or a region to re-tokenize with another language
  * @typedef {{ expand: ('num'|'str'|'strDouble'), match?: undefined }
  *   | {
  *       match: ShjMatcher,
@@ -37,12 +30,18 @@
  */
 
 /**
+ * A language: its grammar alone, or with the type
+ * given to the text the grammar does not match
+ * @typedef {ShjGrammar | { type?: ShjToken, sub: ShjGrammar }} ShjLanguageData
+ */
+
+/**
  * Called with the text and type of every token found
  * @typedef {(text: string, token?: ShjToken) => void} ShjTokenCallback
  */
 
 
-/** @type {Record<string, { type: import('./tokenize.js').ShjToken, match: RegExp }>} */
+/** @type {Record<string, { type: ShjToken, match: RegExp }>} */
 const expandData = {
 	num: {
 		type: 'num',
@@ -62,8 +61,6 @@ const expandData = {
  * Find the tokens in the given code, yielding the name of every
  * language it needs and expecting it to be sent back
  *
- * @generator
- * @function tokenizer
  * @param {string} src The code
  * @param {string|ShjLanguageData} lang The language of the code, by name or given directly
  * @param {ShjTokenCallback} onToken The callback function
@@ -80,7 +77,7 @@ export function* tokenizer(src, lang, onToken) {
 			i = 0,
 			// an unknown language leaves data undefined, the throw makes the catch emit plain text
 			data = /** @type {any} */ (typeof lang === 'string' ? yield lang : lang),
-			// make a fast shallow copy to bee able to splice it without change the original one
+			// make a fast shallow copy to be able to splice it without changing the original one
 			arr = [.../** @type {ShjGrammar} */ (data.sub ?? data)];
 
 		while (i < src.length) {
