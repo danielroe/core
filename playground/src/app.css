@@ -1,0 +1,86 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+	--font-sans: 'DM Sans Variable', 'DM Sans', system-ui, sans-serif;
+	--font-mono: 'Fira Code', ui-monospace, monospace;
+
+	/* wipe Tailwind's default palette so red-500, orange-500, etc. can
+	   never be reached for by accident, only the tokens below exist */
+	--color-*: initial;
+	--color-transparent: transparent;
+
+	/* the chrome is neutral grey in both modes, every channel equal, so no
+	   hue competes with the code themes it frames */
+	--color-page: #ffffff;
+	--color-ink: #404040;
+	--color-ink-dim: #717171;
+	--color-ink-strong: #1a1a1a;
+	--color-line: #e5e5e5;
+	--color-card: #f5f5f5;
+	--color-accent: oklch(70.5% 0.213 47.6);
+}
+
+.dark {
+	/* same lightness the purple #0e0d1d had, without the saturation */
+	--color-page: #151515;
+	--color-ink: #ffffffd9;
+	--color-ink-dim: #ffffff8c;
+	--color-ink-strong: #ffffff;
+	--color-line: #d9d9d933;
+	--color-card: #d9d9d921;
+}
+
+body {
+	background: var(--color-page);
+	color: var(--color-ink);
+	font-family: var(--font-sans);
+}
+
+/* the language sidebar scrolls on its own, with a quiet scrollbar */
+.lang-list {
+	scrollbar-width: thin;
+	scrollbar-color: var(--color-line) transparent;
+}
+
+/* hovered token in the editor, colored by its own syntax color */
+.editor .tok-hover {
+	text-decoration: underline;
+	background: color-mix(in srgb, currentColor 15%, transparent);
+	border-radius: 2px;
+}
+
+/* the caret and selection follow the code theme's text color, the page
+   mode and the code theme can disagree (dark page, light theme, ...) */
+.editor textarea {
+	caret-color: var(--caret, currentColor);
+	/* everything measured off the block, so the caret lands on the glyphs
+	   whatever spacing and type scale the active theme uses */
+	font-size: var(--code-size);
+	line-height: var(--code-lh);
+	tab-size: 4;
+	padding: var(--text-y, 0) var(--code-pad, 0) var(--code-pad, 0) var(--text-x, 0);
+}
+.editor textarea::selection {
+	background: color-mix(in srgb, var(--caret, currentColor) 30%, transparent);
+}
+
+/* the only thing the demo imposes on the code: its own monospace face. The
+   mirror overlay needs both elements on identical metrics, so the textarea
+   follows the theme's size and line height, measured off the block */
+.editor [class*='shj-lang-'],
+.editor textarea {
+	font-family: var(--font-mono) !important;
+}
+/* the textarea is the only scroller, the wrapper the highlighter emits
+   follows it instead of scrolling on its own */
+.editor [class*='shj-lang-'] > div {
+	overflow: hidden;
+}
+/* padding, margin, border, radius and font scale are all the theme's, that
+   is what the demo is here to show */
+.editor [class*='shj-lang-'] {
+	min-height: 380px;
+	overflow: hidden;
+}

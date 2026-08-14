@@ -1,0 +1,48 @@
+name: Deploy Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  # the playground is the org site, served at https://speed-highlight.github.io
+  #
+  # needs, one time: a repo named speed-highlight.github.io (pages source
+  # "deploy from branch" main), a write deploy key on it, and its private
+  # key as the SITE_DEPLOY_KEY secret of this repo
+  deploy-site:
+    name: deploy speed-highlight.github.io
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Repo
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          cache: npm
+          cache-dependency-path: playground/package-lock.json
+
+      - run: npm clean-install
+        working-directory: playground
+      - run: npm run build
+        working-directory: playground
+
+      - name: Push to site repository
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          deploy_key: ${{ secrets.SITE_DEPLOY_KEY }}
+          external_repository: speed-highlight/speed-highlight.github.io
+          publish_branch: main
+          publish_dir: playground/dist
+          force_orphan: true
