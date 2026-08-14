@@ -3,14 +3,14 @@ import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { tokenize as tokenizeAsync } from '../src/index.js';
 import { css, html, js, jsdoc, json, regex, todo } from '../src/languages/index.js';
-import { tokenizeSync } from '../src/tokenize.js';
+import { tokenizeWith } from '../src/tokenize.js';
 
 let fixtures = new URL('../examples/languages/', import.meta.url),
 	languages = { css, html, js, jsdoc, json, regex, todo },
 	read = file => readFileSync(new URL(file, fixtures), 'utf8'),
 	collect = (src, lang, opt) => {
 		let tokens = [];
-		tokenizeSync(src, lang, (str, token) => tokens.push([token, str]), opt);
+		tokenizeWith(src, lang, (str, token) => tokens.push([token, str]), opt);
 		return tokens;
 	},
 	collectAsync = async (src, lang) => {
