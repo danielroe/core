@@ -37,19 +37,10 @@
 
 /**
  * @typedef {Object} ShjOptions
+ * @property {boolean} [block=true] Render as a block, with the line numbering
+ * and header wrapper, rather than inline. `highlightElement` defaults it from
+ * the element instead: a `code` element is inline, anything else is a block
  * @property {boolean} [showLineNumbers=true] Indicates whether to show line numbers
- */
-
-/**
- * Options of `highlightHTML`, which is the only entry choosing its own
- * display mode: the others derive it from the element
- * @typedef {ShjOptions & { multiline?: boolean }} ShjHtmlOptions
- */
-
-/**
- * @typedef {('inline'|'multiline')} ShjDisplayMode
- * * `inline` inside `code` element
- * * `multiline` inside `div` element
  */
 
 import { tokenizer } from './tokenize.js';
@@ -121,14 +112,14 @@ export async function tokenize(src, lang, onToken) {
  *
  * @param {string} src The code
  * @param {ShjLanguage|ShjLanguageData} lang The language of the code
- * @param {ShjHtmlOptions} [opt={}] Customization options, `multiline` (default `true`) adds a wrapper for the line numbering and header
+ * @param {ShjOptions} [opt={}] Customization options
  * @returns {Promise<string>} The highlighted string
  */
 export async function highlightHTML(src, lang, opt = {}) {
 	let tmp = ''
 	await tokenize(src, lang, (str, type) => tmp += toSpan(sanitize(str), type))
 
-	return (opt.multiline ?? true)
+	return (opt.block ?? true)
 		? `<div><div class="shj-numbers">${'<div></div>'.repeat((opt.showLineNumbers ?? true) ? src.split('\n').length : 0)}</div><div>${tmp}</div></div>`
 		: tmp;
 }
@@ -138,16 +129,15 @@ export async function highlightHTML(src, lang, opt = {}) {
  *
  * @param {Element} elm The DOM element
  * @param {ShjLanguage} [lang] The language of the code (searching by default on `elm` for a 'shj-lang-' class)
- * @param {ShjDisplayMode} [mode] The display mode (guessed by default)
- * @param {ShjOptions} [opt={}] Customization options
+ * @param {ShjOptions} [opt={}] Customization options, `block` defaults to the element: a `code` element is inline
  * @returns {Promise<void>} Resolves once the element has been highlighted
  */
-export async function highlightElement(elm, lang = /** @type {ShjLanguage} */ (elm.className.match(/shj-lang-([\w-]+)/)?.[1]), mode, opt) {
+export async function highlightElement(elm, lang = /** @type {ShjLanguage} */ (elm.className.match(/shj-lang-([\w-]+)/)?.[1]), opt = {}) {
 	let txt = elm.textContent;
-	mode ??= elm.tagName == 'CODE' ? 'inline' : 'multiline';
+	let block = opt.block ?? elm.tagName != 'CODE';
 	/** @type {HTMLElement} */ (elm).dataset.lang = lang;
-	elm.className = `${[...elm.classList].filter(className => !className.startsWith('shj-')).join(' ')} shj-lang-${lang} shj-${mode}`;
-	elm.innerHTML = await highlightHTML(txt, lang, { ...opt, multiline: mode == 'multiline' });
+	elm.className = `${[...elm.classList].filter(className => !className.startsWith('shj-')).join(' ')} shj-lang-${lang} shj-${block ? 'block' : 'inline'}`;
+	elm.innerHTML = await highlightHTML(txt, lang, { ...opt, block });
 }
 
 /**
@@ -159,7 +149,7 @@ export async function highlightElement(elm, lang = /** @type {ShjLanguage} */ (e
 export async function highlightAll(opt) {
 	return Promise.all(
 		Array.from(document.querySelectorAll('[class*="shj-lang-"]'))
-		.map(elm => highlightElement(elm, undefined, undefined, opt)));
+		.map(elm => highlightElement(elm, undefined, opt)));
 }
 
 /**

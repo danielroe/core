@@ -64,7 +64,7 @@ export function Code({ code, lang }) {
 		return () => { stale = true; };
 	}, [code, lang]);
 
-	return <div className={`shj-lang-${lang} shj-multiline`} dangerouslySetInnerHTML={{ __html: html }} />;
+	return <div className={`shj-lang-${lang} shj-block`} dangerouslySetInnerHTML={{ __html: html }} />;
 }
 ```
 
@@ -93,7 +93,7 @@ If you highlight at build time and bytes do not matter, use Shiki. speed-highlig
 
 ### In a component
 
-Frameworks own their DOM, so highlight the *string* and render it, as in the quick start (mutating a mounted node with `highlightElement` gets wiped on the next render). The output is HTML-escaped (`&`, `<`, `>`), safe to inject even for untrusted code; the `shj-lang-*` and `shj-multiline` classes hook it into the theme. The same pattern works in Vue, Svelte, and Angular; ready-made components are in [#85](https://github.com/speed-highlight/core/pull/85).
+Frameworks own their DOM, so highlight the *string* and render it, as in the quick start (mutating a mounted node with `highlightElement` gets wiped on the next render). The output is HTML-escaped (`&`, `<`, `>`), safe to inject even for untrusted code; the `shj-lang-*` and `shj-block` classes hook it into the theme. The same pattern works in Vue, Svelte, and Angular; ready-made components are in [#85](https://github.com/speed-highlight/core/pull/85).
 
 ### On a plain page
 
@@ -111,12 +111,12 @@ Mark code blocks with a `shj-lang-*` class and call `highlightAll` once:
 
 Blocks are a single `<div>` instead of `<pre><code>` so the line-number gutter can be laid out inside; the `shj-lang-` prefix avoids colliding with Prism's `language-*` during a migration.
 
-For per-element control use `highlightElement`. It guesses the display mode (`inline` for `code` tags, `multiline` for `div`s), accepts overrides, and sets `data-lang` so a theme can render a language header with `content: attr(data-lang)`:
+For per-element control use `highlightElement`. It renders a `code` element inline and anything else as a block, accepts `block` as an override, and sets `data-lang` so a theme can render a language header with `content: attr(data-lang)`:
 
 ```js
 import { highlightElement } from '@speed-highlight/core';
 
-await highlightElement(element, 'js', 'multiline', { showLineNumbers: false });
+await highlightElement(element, 'js', { showLineNumbers: false });
 ```
 
 ### Detect the language
@@ -209,7 +209,7 @@ The main entry covers most apps; reach for `/tokenize` when you want the raw tok
 | Entry | Export | Description |
 | --- | --- | --- |
 | [`@speed-highlight/core`](src/index.js) | `highlightAll(opt?)` | Highlight every element with a `shj-lang-*` class |
-| | `highlightElement(elm, lang?, mode?, opt?)` | Highlight one element (language read from its class by default) |
+| | `highlightElement(elm, lang?, opt?)` | Highlight one element (language read from its class by default) |
 | | `highlightHTML(src, lang, opt?)` | Highlight a string, resolves to an HTML string |
 | | `highlightANSI(src, lang, theme)` | Highlight a string, resolves to an ANSI string for terminals |
 | | `tokenize(src, lang, onToken)` | Loader-based tokenizer, calls `onToken(text, type)` |
@@ -220,7 +220,7 @@ The main entry covers most apps; reach for `/tokenize` when you want the raw tok
 | [`.../themes/*.css`](src/themes/) | | Web themes |
 | [`.../themes/*.js`](src/themes/) | | Terminal themes, plus `termcolor.js` helpers |
 
-`lang` is a name (`'js'`) or a grammar object passed directly. `opt` is `{ showLineNumbers?: boolean }` (default `true`), plus `multiline?: boolean` (default `true`) for `highlightHTML`, which is the only entry that does not read its display mode off an element.
+`lang` is a name (`'js'`) or a grammar object passed directly. `opt` is `{ block?: boolean, showLineNumbers?: boolean }`, both `true` by default, except that `highlightElement` and `highlightAll` read `block` off the element instead: a `code` element is inline, anything else is a block.
 
 ## Languages
 
@@ -329,7 +329,7 @@ A web theme colors the token classes; start from [`default.css`](src/themes/defa
 .shj-numbers { color: #6272a4; }
 ```
 
-Display-mode hooks: `.shj-inline` (inside `code`), `.shj-multiline`, and `.shj-numbers` for the gutter. Terminal themes are the token-to-escape maps shown in [Terminal usage](#terminal-usage).
+Display-mode hooks: `.shj-inline` (inside `code`), `.shj-block`, and `.shj-numbers` for the gutter. Terminal themes are the token-to-escape maps shown in [Terminal usage](#terminal-usage).
 
 ## Migrating from v1
 
@@ -342,7 +342,9 @@ Display-mode hooks: `.shj-inline` (inside `code`), `.shj-multiline`, and `.shj-n
 | `@speed-highlight/core/terminal` entry | merged into `@speed-highlight/core` |
 | `common.js` shared patterns | `{ expand: 'num' \| 'str' \| 'strDouble' }` built into the tokenizer |
 | `{ hideLineNumbers: true }` | `{ showLineNumbers: false }` |
-| `oneline` display mode | removed, `div`s are always `multiline` (pass `{ showLineNumbers: false }` for a bare block) |
+| `oneline` display mode | removed, a `div` is always a block (pass `{ showLineNumbers: false }` for a bare one) |
+| `highlightElement(elm, lang, mode, opt)` | the mode moved into the options: `highlightElement(elm, lang, { block })` |
+| `shj-multiline` class | `shj-block` |
 
 ## Benchmark
 

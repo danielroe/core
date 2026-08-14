@@ -159,7 +159,7 @@
 </script>
 
 <div class="editor relative overflow-hidden bg-page" style="--caret: {caret ?? 'currentColor'}; --text-x: {textX}px; --text-y: {textY}px; --code-size: {codeSize}; --code-lh: {codeLh}; --code-pad: {codePad}">
-	<div class="shj-lang-{lang} shj-multiline" bind:this={mirror} aria-hidden="true">{@html mirrorHtml}</div>
+	<div class="shj-lang-{lang} shj-block" bind:this={mirror} aria-hidden="true">{@html mirrorHtml}</div>
 	<textarea
 		bind:this={input}
 		bind:value={code}

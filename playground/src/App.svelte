@@ -108,7 +108,7 @@
 	const activePreview = $derived(themePreviews[previewTheme ?? theme]);
 
 	// what the whole-header copy buttons put in the clipboard, runnable as is
-	const editorSnippet = $derived(`import { highlightHTML } from '@speed-highlight/core';\nimport '@speed-highlight/core/themes/${previewTheme ?? theme}.css';\n\nelement.className = 'shj-lang-${activeLang} shj-multiline';\nelement.innerHTML = await highlightHTML(code, '${activeLang}', { showLineNumbers: ${numbers} });`);
+	const editorSnippet = $derived(`import { highlightHTML } from '@speed-highlight/core';\nimport '@speed-highlight/core/themes/${previewTheme ?? theme}.css';\n\nelement.className = 'shj-lang-${activeLang} shj-block';\nelement.innerHTML = await highlightHTML(code, '${activeLang}', { showLineNumbers: ${numbers} });`);
 	const terminalSnippet = $derived(`import { highlightANSI } from '@speed-highlight/core';\nimport ${themeVar(previewTermTheme ?? terminalTheme)} from '@speed-highlight/core/themes/${previewTermTheme ?? terminalTheme}.js';\n\nconsole.log(await highlightANSI(code, '${activeLang}', ${themeVar(previewTermTheme ?? terminalTheme)}));`);
 
 	async function loadSample(name) {
