@@ -47,9 +47,8 @@
  */
 
 /**
- * @typedef {('inline'|'oneline'|'multiline')} ShjDisplayMode
+ * @typedef {('inline'|'multiline')} ShjDisplayMode
  * * `inline` inside `code` element
- * * `oneline` inside `div` element and containing only one line
  * * `multiline` inside `div` element
  */
 
@@ -145,7 +144,7 @@ export async function highlightHTML(src, lang, opt = {}) {
  */
 export async function highlightElement(elm, lang = /** @type {ShjLanguage} */ (elm.className.match(/shj-lang-([\w-]+)/)?.[1]), mode, opt) {
 	let txt = elm.textContent;
-	mode ??= `${elm.tagName == 'CODE' ? 'in' : (txt.split('\n').length < 2 ? 'one' : 'multi')}line`;
+	mode ??= elm.tagName == 'CODE' ? 'inline' : 'multiline';
 	/** @type {HTMLElement} */ (elm).dataset.lang = lang;
 	elm.className = `${[...elm.classList].filter(className => !className.startsWith('shj-')).join(' ')} shj-lang-${lang} shj-${mode}`;
 	elm.innerHTML = await highlightHTML(txt, lang, { ...opt, multiline: mode == 'multiline' });
