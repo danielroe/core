@@ -4,6 +4,7 @@
 export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	{
 		match: /#.*/g,
+		type: 'cmnt',
 		sub: 'todo'
 	},
 	{
@@ -24,6 +25,7 @@ export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	},
 	{
 		match: /("""|''')(\\[^]|(?!\1)[^])*\1?/g,
+		type: 'cmnt',
 		sub: 'todo'
 	},
 	{

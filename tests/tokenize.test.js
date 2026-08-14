@@ -62,12 +62,12 @@ test('the type of a language applies to the text it does not match', () => {
 	]);
 });
 
-test('a sub that is not given is emitted as plain text', () => {
+test('a sub that is not given keeps the type of its rule', () => {
 	deepStrictEqual(collect('"test"\n// TODO stuff', { sub: js }), [
 		[undefined, ''],
 		["str", '"test"'],
 		[undefined, '\n'],
-		[undefined, '// TODO stuff'],
+		['cmnt', '// TODO stuff'],
 		[undefined, '']
 	]);
 });

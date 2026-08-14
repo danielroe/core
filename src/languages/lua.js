@@ -4,6 +4,7 @@
 export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	{
 		match: /^#!.*|--(\[(=*)\[[^]*?\]\2\]|.*)/g,
+		type: 'cmnt',
 		sub: 'todo'
 	},
 	{

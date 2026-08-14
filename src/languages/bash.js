@@ -10,6 +10,7 @@ let variable = {
 
 export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	{
+		type: 'cmnt',
 		sub: 'todo',
 		match: /#.*/g
 	},

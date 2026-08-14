@@ -9,10 +9,12 @@ export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	},
 	{ // jsdoc comments
 		match: /\/\*\*((?!\*\/)[^])*(\*\/)?/g,
+		type: 'cmnt',
 		sub: 'jsdoc'
 	},
 	{ // comments
 		match: /\/\/.*\n?|\/\*((?!\*\/)[^])*(\*\/)?/g,
+		type: 'cmnt',
 		sub: 'todo'
 	},
 	{
@@ -61,6 +63,7 @@ export default /** @satisfies {import('../index.js').ShjGrammar} */ ([
 	},
 	{
 		match: /\/((?!\/)[^\r\n\\]|\\.)+\/[dgimsuy]*/g,
+		type: 'oper',
 		sub: 'regex'
 	},
 	{

@@ -64,10 +64,12 @@ const expandData = {
  * @param {string} src The code
  * @param {string|ShjLanguageData} lang The language of the code, by name or given directly
  * @param {ShjTokenCallback} onToken The callback function
+ * @param {ShjToken} [fallback] Type for the whole region if the language cannot
+ * be resolved, so a sub that is not given keeps the type of the rule embedding it
  * @yields {string} The name of a language to resolve
  * @returns {Generator<string, void, ShjLanguageData|undefined>}
  */
-export function* tokenizer(src, lang, onToken) {
+export function* tokenizer(src, lang, onToken, fallback) {
 	// outside the try so the catch can emit only what is left
 	let i = 0;
 	try {
@@ -115,7 +117,7 @@ export function* tokenizer(src, lang, onToken) {
 			// repeats or drops it
 			i = first.index;
 			if (first.part.sub)
-				yield* tokenizer(first.match, typeof first.part.sub === 'string' ? first.part.sub : (typeof first.part.sub === 'function' ? first.part.sub(first.match) : first.part), onToken);
+				yield* tokenizer(first.match, typeof first.part.sub === 'string' ? first.part.sub : (typeof first.part.sub === 'function' ? first.part.sub(first.match) : first.part), onToken, first.part.type);
 			else
 				onToken(first.match, first.part.type);
 			i = first.end;
@@ -123,7 +125,7 @@ export function* tokenizer(src, lang, onToken) {
 		onToken(src.slice(i, src.length), data.type);
 	}
 	catch {
-		onToken(src.slice(i));
+		onToken(src.slice(i), fallback);
 	}
 }
 

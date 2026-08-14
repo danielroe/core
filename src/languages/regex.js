@@ -7,6 +7,7 @@ export default /** @satisfies {import('../index.js').ShjLanguageData} */ ({
 	sub: [
 	{
 		match: /^(?!\/).*/gm,
+		type: 'cmnt',
 		sub: 'todo'
 	},
 	{
