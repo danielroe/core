@@ -61,6 +61,5 @@ echo '{"type": "commonjs"}' > dist/node/package.json
 
 node scripts/generate-tables.js
 node scripts/generate-toc.js
-node scripts/benchmark.js --write
 
 exit 0
